@@ -1747,8 +1747,23 @@ arTable.req("your-url", function (res) {
                 <h3>Example</h3>
                 <div class="bg-b col-mx">
                     <pre>
+var show_data = document.getElementById("show-data");
 
-                    </pre>
+document.getElementById("clear-checked").addEventListener("click", function () {
+    othersArTable.clearChecked();
+})
+document.getElementById("get-data").addEventListener("click", function () {
+    show_data.innerHTML = JSON.stringify(othersArTable.getData(), null, 4);
+})
+document.getElementById("get-checked").addEventListener("click", function () {
+    show_data.innerHTML = JSON.stringify(othersArTable.getCheckedData(), null, 4);
+})
+document.getElementById("get-current").addEventListener("click", function () {
+    show_data.innerHTML = JSON.stringify(othersArTable.getCurrentData(), null, 4);
+})
+document.getElementById("get-all-current").addEventListener("click", function () {
+    show_data.innerHTML = JSON.stringify(othersArTable.getAllCurrentData(), null, 4);
+})</pre>
                 </div>
 
                 <h3>Output:</h3>
