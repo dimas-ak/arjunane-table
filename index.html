@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arjunane Table</title>
+    <link rel="stylesheet" href="arjunane.min.css">
+    <style>
+        .bg-b {
+            background: #272822;
+            color: white;
+        }
+        
+        /* .blue {
+            color: #66D9EF
+        }
+        
+        .green {
+            color: #A6E22E
+        }
+        
+        .red {
+            color: #F92672;
+        }
+        
+        .purple {
+            color: #AE81FF
+        }
+        
+        .orange {
+            color: #FD971F
+        }
+        
+        .yellow {
+            color: #E6DB74
+        }
+        
+        .comment {
+            color: #75715E
+        } */
+
+        .nav
+        {
+            color:white;
+            position:fixed;
+            left:0;bottom:0;top:0;
+            width:250px;
+            z-index: 10;
+            background:#272822;
+        }
+        .list
+        {
+            width:100%;
+            height:100%;
+            overflow-y: auto;
+        }
+
+        .list a.active{
+            color:#FD971F
+        }
+        .show-doc{display:none;padding-left:260px;}
+        .show-doc.active{display:block;}
+        .table-default th
+        {
+            background:#CCC;
+            padding:5px;
+        }
+        .table-default td
+        {
+            padding:5px;
+            border: 1px solid #CCC;
+        }
+        pre{padding: 10px;}
+    </style>
+</head>
+
+<body>
+    <div class="nav">
+        <div class="list">
+            <h3 class="center">-=[ Arjunane Table ]=-</h3>
+            <div class="p-x">
+                <h3>Tutorials</h3>
+                <ul>
+                    <li><a class="choose-doc active" href="#home">Home</a></li>
+                    <li><a class="choose-doc" href="#simple-replace">Simple Replace</a></li>
+                    <li><a class="choose-doc" href="#simple-init">Simple Init</a></li>
+                    <li><a class="choose-doc" href="#objects">Objects Parameters</a></li>
+                    <li><a class="choose-doc" href="#update-row">Update Row</a></li>
+                    <li><a class="choose-doc" href="#action">Action</a></li>
+                    <li><a class="choose-doc" href="#popup-action">Popup Action</a></li>
+                    <li>
+                        <span>Content Top & Bottom</span>
+                        <ul>
+                            <li><a class="choose-doc" href="#content-action">Action</a></li>
+                            <li><a class="choose-doc" href="#content-filter">Form Filter</a></li>
+                        </ul>
+                    </li>
+                    <li><a class="choose-doc" href="#insert-data">Insert Data</a></li>
+                    <li><a class="choose-doc" href="#update-data">Update Data</a></li>
+                    <li><a class="choose-doc" href="#delete-data">Delete Data</a></li>
+                    <li><a class="choose-doc" href="#show-alert">Show Alert</a></li>
+                    <li><a class="choose-doc" href="#show-confirm">Show Confirm</a></li>
+                    <li><a class="choose-doc" href="#filter">Filter</a></li>
+                    <li><a class="choose-doc" href="#req">Req</a></li>
+                    <li><a class="choose-doc" href="#others">Others</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="p-x">
+        <div class="show-doc active" id="home">
+            <h1>Welcome to Arjunane Table documentation</h1>
+            <div class="p-x">
+                <strong>Required : </strong>
+                <ul>
+                    <li>arjunane_table.js <strong>OR</strong> arjunane_table.min.js</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="show-doc" id="simple-replace">
+            <h1>Simple Replace</h1>
+            <div class="p-x">
+                <span>Let's say, you have a table where the id is #replace.</span>
+                <div class="p-x">
+                    <table class="table-default">
+                        <tr>
+                            <th>Nama</th>
+                            <th>Kelas</th>
+                            <th>Kelulusan</th>
+                            <th>Nilai</th>
+                        </tr>
+                        <tr>
+                            <td>Slamet</td>
+                            <td>X</td>
+                            <td>Lulus</td>
+                            <td>74</td>
+                        </tr>
+                        <tr>
+                            <td>Bejo</td>
+                            <td>X</td>
+                            <td>Lulus</td>
+                            <td>80</td>
+                        </tr>
+                        <tr>
+                            <td>Dekalel</td>
+                            <td>XI</td>
+                            <td>Lulus</td>
+                            <td>89</td>
+                        </tr>
+                        <tr>
+                            <td>Sutresno</td>
+                            <td>X</td>
+                            <td>Tidak Lulus</td>
+                            <td>69</td>
+                        </tr>
+                        <tr>
+                            <td>Tasuri</td>
+                            <td>XI</td>
+                            <td>Tidak Lulus</td>
+                            <td>59</td>
+                        </tr>
+                        <tr>
+                            <td>Turiah</td>
+                            <td>X</td>
+                            <td>Lulus</td>
+                            <td>87</td>
+                        </tr>
+                        <tr>
+                            <td>De Mentu</td>
+                            <td>V</td>
+                            <td>Lulus</td>
+                            <td>72</td>
+                        </tr>
+                        <tr>
+                            <td>Deradi</td>
+                            <td>VI</td>
+                            <td>Lulus</td>
+                            <td>90</td>
+                        </tr>
+                        <tr>
+                            <td>Sukiman</td>
+                            <td>VI</td>
+                            <td>Lulus</td>
+                            <td>75</td>
+                        </tr>
+                        <tr>
+                            <td>Dekempung</td>
+                            <td>VII</td>
+                            <td>Lulus</td>
+                            <td>85</td>
+                        </tr>
+                        <tr>
+                            <td>Ji'eng</td>
+                            <td>VII</td>
+                            <td>Tidak Lulus</td>
+                            <td>55</td>
+                        </tr>
+                        <tr>
+                            <td>Tukiman</td>
+                            <td>VII</td>
+                            <td>Tidak Lulus</td>
+                            <td>46</td>
+                        </tr>
+                    </table>
+                </div>
+                <h3 class="red dis-ib">NOTE:</h3> <span>When you use <strong>init</strong> method to replace your table tag, the output of JSON is <strong>Array</strong></span>
+                <div class="bg-b">
+                    <pre>
+var arTable = arTable.init("#replace");</pre>
+                </div>
+                <h3>Output : </h3>
+                <table id="replace">
+                    <tr>
+                        <th>Nama</th>
+                        <th>Kelas</th>
+                        <th>Kelulusan</th>
+                        <th>Nilai</th>
+                    </tr>
+                    <tr>
+                        <td>Slamet</td>
+                        <td>X</td>
+                        <td>Lulus</td>
+                        <td>74</td>
+                    </tr>
+                    <tr>
+                        <td>Bejo</td>
+                        <td>X</td>
+                        <td>Lulus</td>
+                        <td>80</td>
+                    </tr>
+                    <tr>
+                        <td>Dekalel</td>
+                        <td>XI</td>
+                        <td>Lulus</td>
+                        <td>89</td>
+                    </tr>
+                    <tr>
+                        <td>Sutresno</td>
+                        <td>X</td>
+                        <td>Tidak Lulus</td>
+                        <td>69</td>
+                    </tr>
+                    <tr>
+                        <td>Tasuri</td>
+                        <td>XI</td>
+                        <td>Tidak Lulus</td>
+                        <td>59</td>
+                    </tr>
+                    <tr>
+                        <td>Turiah</td>
+                        <td>X</td>
+                        <td>Lulus</td>
+                        <td>87</td>
+                    </tr>
+                    <tr>
+                        <td>De Mentu</td>
+                        <td>V</td>
+                        <td>Lulus</td>
+                        <td>72</td>
+                    </tr>
+                    <tr>
+                        <td>Deradi</td>
+                        <td>VI</td>
+                        <td>Lulus</td>
+                        <td>90</td>
+                    </tr>
+                    <tr>
+                        <td>Sukiman</td>
+                        <td>VI</td>
+                        <td>Lulus</td>
+                        <td>75</td>
+                    </tr>
+                    <tr>
+                        <td>Dekempung</td>
+                        <td>VII</td>
+                        <td>Lulus</td>
+                        <td>85</td>
+                    </tr>
+                    <tr>
+                        <td>Ji'eng</td>
+                        <td>VII</td>
+                        <td>Tidak Lulus</td>
+                        <td>55</td>
+                    </tr>
+                    <tr>
+                        <td>Tukiman</td>
+                        <td>VII</td>
+                        <td>Tidak Lulus</td>
+                        <td>46</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="show-doc" id="simple-init">
+            <h1>Simple Init</h1>
+            <div class="p-x">
+                <div class="mb-1">
+                    <strong>url</strong> and <strong>thead</strong> are required<br>
+                    <span>When you use <strong>init</strong> function, use should set "url" and "thead" for second parameters</span><br>
+                    <span>Which second parameters is object</span><br>
+
+                    <div class="mb-1 fs-16">Info : </div>
+                    <span>When you use <strong>replace</strong> function, "url" and "thead" are not required</span><br>
+
+                    <div class="mb-1">No matters what the result is, when you have an array data or object data</div>
+                    <strong>Example for array data : </strong><br> 0 : ["Sudrun", "XI", 90]<br> 1 : ["Caridi", "X", 69]<br><br>
+
+                    <strong>Example for object data : </strong><br> 0 : { name : "Sudrun", class : "XI", grade : 90}<br> 1 : { name : "Caridi", class : "X", grade : 69}<br><br>
+
+                    <span>It'll automatically catch the data of your</span>
+                    </br></br>
+                    <h3 class="red dis-ib">WARNING:</h3> <span>Please to always be consistent in using JSON, either <strong>Array</strong> or <strong>Array of Object</strong></span>
+                </div>
+                <div class="bg-b px">
+                    <pre>
+var arTable = arTable.init("#table", {
+    url : "json.json",
+    title: "Data Orang",
+    thead: ["ID", "name", "Grade", "Passing", "Sex", "Birth", "Place"]
+});</pre>
+                </div>
+                <h3>Output : </h3>
+                <div class="set-table"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="objects">
+            <h1>Objects Parameters</h1>
+            <div class="p-x">
+                <div class="col-mx">
+                    <ul>
+                        <li>
+                            <strong>url</strong> [string]
+                            <ul>
+                                <li>Your url json.</li>
+                                <li><strong>Example:</strong>  <br>
+                                    <div class="bg-b px">
+                                        <pre>
+url : <span class="yellow">"json/json.json"</span></pre>
+                                    </div></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>title</strong> [string]
+                            <ul>
+                                <li>Give title for your table or you can leave it empty.</li>
+                                <li><strong>Example:</strong> <br>
+                                    <div class="bg-b px">
+                                        <pre>
+title : <span class="yellow">"Data Orang"</span></pre>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>thead</strong> [array of string]
+                            <ul>
+                                <li>Your thead column name.</li>
+                                <li><strong>Example:</strong> <br>
+                                    <div class="bg-b px">
+                                        <pre>
+thead : [<span class="yellow">"ID"</span>, <span class="yellow">"Name"</span>, <span class="yellow">"Grade"</span>, <span class="yellow">"Passing"</span>, <span class="yellow">"Sex"</span>, <span class="yellow">"Birth"</span>, <span class="yellow">"Place"</span>]</pre>
+                                    </div>
+                                </li>
+                                <li>
+                                    <Strong>NOTE:</Strong> if you use a <strong>table</strong> as container, it not required.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>checkable</strong> [boolean]
+                            <ul>
+                                <li>Set it to <strong>true</strong> then the checkbox will showed (default is <strong>false</strong>).</li>
+                                <li><strong>Example:</strong> <br>
+                                    <div class="bg-b px">
+                                        <pre>
+checkable : <span class="purple">true</span></pre>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>numeric</strong> [boolean]
+                            <ul>
+                                <li>Set it to <strong>true</strong> then the numbers will showed (default is <strong>false</strong>).</li>
+                                <li><strong>Example:</strong> <br>
+                                    <div class="bg-b px">
+                                        <pre>
+numeric : <span class="purple">true</span></pre>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>scrollable</strong> [boolean]
+                            <ul>
+                                <li>Set it to <strong>false</strong> and the <strong>Scroll</strong> will be hide (default is <strong>true</strong>).</li>
+                                <li><strong>Example:</strong> <br>
+                                    <div class="bg-b px">
+                                        <pre>
+scrollable : <span class="purple">true</span></pre>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>height</strong> [integer]
+                            <ul>
+                                <li><strong>NOTE</strong> : Be carefully if you set <strong>scrollable</strong> to false and you set the height of table.</li>
+                                <li><strong>Example:</strong> <br>
+                                    <div class="bg-b px">
+                                        <pre>
+height : <span class="purple">800</span></pre>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>hide</strong> [array]
+                            <ul>
+                                <li><strong>Example:</strong> <br>
+                                    <div class="bg-b px">
+                                        <pre>
+hide : [<span class="purple">0</span>, <span class="purple">1</span>]</pre>
+                                    </div>
+                                    <strong>OR</strong>
+                                    <br>
+                                    <div class="bg-b px">
+                                        <pre>
+hide : [<span class="yellow">"id"</span>, <span class="yellow">"password"</span>]</pre>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="show-doc" id="update-row">
+            <h1>Update Row</h1>
+            <div class="p-x">
+                <div class="mb-1">
+                    <span>This method is used to work with the data in the row.</span><br>
+                    <strong>NOTE</strong> : that when used as a setter, this method sets the data to apply to the table, but does not update the table's internal caches of data
+                </div>
+                <div class="bg-b px">
+                    <pre>
+update_row :
+{
+    3 : function (data)
+    {
+        var html = (data[3] !== 1) ? '&lt;span style="color:red;">Tidak Lulus&lt;/span>' : '&lt;span style="color:green">Lulus&lt;/span>';
+        return html;
+    }
+}</pre>
+
+                </div>
+                <div class="mt-1 mb-1">
+                    <strong>OR</strong>
+                </div>
+                <div class="bg-b px">
+                    <pre>
+update_row :
+{
+    "passing" : function (data)
+    {
+        var html = (data["grade"] > 70) ? '&lt;span style="color:red;">Tidak Lulus&lt;/span>' : '&lt;span style="color:green">Lulus&lt;/span>';
+        return html;
+    }
+}</pre>
+                </div>
+                <div class="col-mx">
+                    <h3>Output:</h3>
+                </div>
+                <div id="update_row"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="action">
+            <h1>Action</h1>
+            <div class="p-x">
+                <div class="mb-1">
+                    <span>The <strong>action</strong> and <strong>popup_action</strong> are objects that defines a clickable button or specifies the URL of the page the link goes to.</span>
+                </div>
+                <strong>action</strong> have 5 keys :
+                <ul>
+                    <li>text : name or text of button</li>
+                    <li>href : your link</li>
+                    <li>attr [<i>Optional</i> ] : Your optional attributes</li>
+                    <li>params [<i>Optional</i> ] : custom parameter for your link (href) without adding a <strong>listener</strong>
+                        <ul>
+                            <li>data : get current data</li>
+                            <li>return string</li>
+                        </ul>
+                    </li>
+                    <li>listener [<i>Optional</i> ] : your action for the listener and you can custom your link/href in it
+                        <ul>
+                            <li>data : get current data</li>
+                            <li>events</li>
+                            <li>index : get current index</li>
+                            <li>request : request data to your server</li>
+                            <li>object : object <strong>this</strong></li>
+                        </ul>
+                    </li>
+                </ul>
+    
+                <div class="mb-1">
+                    <strong>Example</strong> :
+                </div>
+                <div class="bg-b px mb-1">
+                    <pre>
+arTable.init("#table-action", {
+    url     : "json.json",
+    title   : "Data Orang",
+    thead   : ["ID", "Name", "Grade", "Passing", "Sex", "Birth", "Place"],
+    action  : 
+    [
+        {
+            text    : "Edit",
+            cls     : "btn t1 blue",
+            href    : "edit.php",
+            params  : function (data)
+            {
+                var url     = this.href + "?id=" + data[0];
+                return url;
+            },
+            listener: function  (data, event, index, req, element)
+            {
+                event.preventDefault();
+                var url = element.getAttribute("href");
+                req(url, function (result) {
+                    if(result.error === null && arTable.isJSON(result.result))
+                    {
+                        // Success
+                    }
+                    else
+                    {
+                        // Error
+                    }
+                });
+            }
+        },
+        {
+            text    : "Delete",
+            cls     : "btn t1 red",
+            href    : "delete.php",
+            params  : function (data)
+            {
+                var url     = this.href + "?id=" + data[0];
+                return url;
+            }
+        }
+    ]
+});</pre>
+                </div>
+                <h3>Output:</h3>
+                <div id="table-action"></div>
+                <div class="mb-1">
+                    <strong>Example</strong> : Action at <strong>content_top</strong>.
+                </div>
+            </div>
+        </div>
+        
+        <div class="show-doc" id="popup-action">
+            <h1>Popup Action</h1>
+            <div class="p-x">
+                <div class="mb-1">
+                    <span>The <strong>action</strong> and <strong>popup_action</strong> are objects that defines a clickable button or specifies the URL of the page the link goes to.</span>
+                </div>
+                <strong>popup_action</strong> have 6 keys :
+                <ul>
+                    <li>text : name or text of button</li>
+                    <li>href : your link</li>
+                    <li>cls [<i>Optional</i> ] : class of CSS (you can put your CSS on it)</li>
+                    <li>attr [<i>Optional</i> ] : Your optional attributes</li>
+                    <li>params [<i>Optional</i> ] : custom parameter for your link (href)
+                        <ul>
+                            <li>data : get current data</li>
+                            <li>return string</li>
+                        </ul>
+                    </li>
+                    <li>listener [<i>Optional</i> ] : your action for the listener
+                        <ul>
+                            <li>data : get current data</li>
+                            <li>events</li>
+                            <li>index : get current index</li>
+                            <li>request : request data to your server</li>
+                            <li>object : object <strong>this</strong></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <div class="mb-1">
+                    <strong>Example</strong> :
+                </div>
+                <div class="bg-b px mb-1">
+                    <pre>
+arTable.init("#table-popup", {
+    url     : "json.json",
+    title   : "Data Orang",
+    thead   : ["ID", "Name", "Grade", "Passing", "Sex", "Birth", "Place"],
+    popup_action  : 
+    [
+        {
+            text    : "Edit",
+            cls     : "btn t1 blue",
+            href    : "edit.php",
+            params  : function (data)
+            {
+                var url     = this.href + "?id=" + data[0];
+                return url;
+            },
+            listener: function  (data, event, index, req, element)
+            {
+                event.preventDefault();
+                var url = element.getAttribute("href");
+                req(url, function (result) {
+                    if(result.error === null && arTable.isJSON(result.result))
+                    {
+                        // Success
+                    }
+                    else
+                    {
+                        // Error
+                    }
+                });
+            }
+        },
+        {
+            text    : "Delete",
+            cls     : "btn t1 red",
+            href    : "delete.php",
+            params  : function (data)
+            {
+                var url     = this.href + "?id=" + data[0];
+                return url;
+            }
+        }
+    ]
+});</pre>
+                </div>
+                <h3>Output:</h3>
+                <div id="table-popup"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="content-action">
+            <h1>Content Top & Bottom : Action</h1>
+            <div class="p-x">
+                <div class="mb-1">
+                    <span>The <strong>action</strong> is an object that defines a clickable button or specifies the URL of the page the link goes to.</span>
+                </div>
+                <strong>action</strong> have 6 keys :
+                <ul>
+                    <li>text : name or text of button</li>
+                    <li>href : your link</li>
+                    <li>type [<i>Optional</i> ] : type of class (you can put your CSS on it)
+                        <ul>
+                            <li>success</li>
+                            <li>danger</li>
+                            <li>warning</li>
+                            <li>info</li>
+                        </ul>
+                    </li>
+                    <li>attr [<i>Optional</i> ] : Your optional attributes</li>
+                    <li>params [<i>Optional</i> ] : custom parameter for your link (href) without adding a <strong>listener</strong>
+                        <ul>
+                            <li>data : get current data of the selected data</li>
+                            <li>return string</li>
+                        </ul>
+                    </li>
+                    <li>listener [<i>Optional</i> ] : your action for the listener and you can custom your link/href in it
+                        <ul>
+                            <li>data : get current data of the selected data</li>
+                            <li>events</li>
+                            <li>index : get current index of the selected data</li>
+                            <li>request : request data to your server</li>
+                        </ul>
+                    </li>
+                </ul>
+    
+                <div class="mb-1">
+                    <strong>Example</strong> :
+                </div>
+                <div class="bg-b px mb-1">
+                    <pre>
+arTable.init("#table-content-action", {
+    url     : "json.json",
+    title   : "Data Orang",
+    checkable: true,
+    thead   : ["ID", "Name", "Grade", "Passing", "Sex", "Birth", "Place"],
+    content_bottom :
+    {
+        action : 
+        [
+            {
+                text    : "Insert Content Bottom",
+                type    : "success",
+                href    : "insert.php",
+                attr    : 'id="add-data"',
+                params  : function (data)
+                {
+                    var param   = new Array();
+                    var url = "#";
+                    if(data.length > 0)
+                    {
+                        for(var i = 0 ; i < data.length; i++)
+                        {
+                            param.push(data[i][0]); // get 'id'
+                        }
+                        url = "?id=" + param.join(",");
+                    }
+                    return url;
+                }
+            },
+            {
+                text    : "Edit Content Bottom",
+                type    : "info",
+                href    : "edit.php",
+                listener: function  (data, event, index, req)
+                {
+                    event.preventDefault();
+                    var param   = new Array();
+                    //custom your link/href (get current selected data)
+                    if(data.length > 0)
+                    {
+                        for(var i = 0 ; i < data.length; i++)
+                        {
+                            param.push(data[i][0]);
+                        }
+                        var url = this.href + "?id=" + param.join(",");
+                        req(url, function (result) {
+                            if(result.error === null && arTable.isJSON(result.result))
+                            {
+                                // Success
+                            }
+                            else
+                            {
+                                // Error
+                            }
+                        });
+                    }
+                }
+            }
+        ] 
+    },
+    content_top :
+    { 
+        action : 
+        [
+            {
+                text    : "Insert Content Top",
+                type    : "success",
+                href    : "insert.php",
+                attr    : 'id="add-data"',
+                params  : function (data)
+                {
+                    var param   = new Array();
+                    var url = "#";
+                    if(data.length > 0)
+                    {
+                        for(var i = 0 ; i < data.length; i++)
+                        {
+                            param.push(data[i][0]); // get 'id'
+                        }
+                        url = "?id=" + param.join(",");
+                    }
+                    return url;
+                }
+            },
+            {
+                text    : "Edit Content Top",
+                type    : "info",
+                href    : "edit.php",
+                listener: function  (data, event, index, req)
+                {
+                    event.preventDefault();
+                    var param   = new Array();
+                    //custom your link/href (get current selected data)
+                    if(data.length > 0)
+                    {
+                        for(var i = 0 ; i < data.length; i++)
+                        {
+                            param.push(data[i][0]);
+                        }
+                        var url = this.href + "?id=" + param.join(",");
+                        req(url, function (result) {
+                            if(result.error === null && arTable.isJSON(result.result))
+                            {
+                                // Success
+                            }
+                            else
+                            {
+                                // Error
+                            }
+                        });
+                    }
+                }
+            }
+        ]
+    }
+});</pre>
+                </div>
+                <h3>Output:</h3>
+                <div id="table-content-action"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="content-filter">
+            <h1>Content Top & Bottom : Form Filter</h1>
+            <div class="p-x">
+                <div class="m-b-1">
+                    <strong>form_filter</strong> is an object that will search or filter data
+                </div>
+                <strong>form_filter</strong> have 5 keys :
+                <ul>
+                    <li>text    : name or text of form filter</li>
+                    <li>for_key : key of Array or Array of Object [<strong>string</strong> OR <strong>integer</strong>]</li>
+                    <li>type    :
+                        <ul>
+                            <li>input</li>
+                            <li>select</li>
+                        </ul>
+                    </li>
+                    <li>arr : only for <strong>select</strong> type</li>
+                    <li>attr [<i>Optional</i> ] : Your optional attributes</li>
+                </ul>
+                <div class="col-mx">
+                    <strong>NOTE:</strong> It take half of second (1/2 second) to change or update the data of table (to prevent fast changing)
+                </div>
+                <div class="mb-1">
+                    <strong>Example</strong> :
+                </div>
+                <div class="bg-b px mb-1">
+                    <pre>
+arTable.init("#table-filter", {
+    url     : "json.php",
+    title   : "Data Orang",
+    thead   : ["ID", "Name", "Grade", "Passing", "Sex", "Birth", "Place"],
+    content_top :
+    {
+        form_filter :  [
+            { 
+                text    : "Nama Siswa",
+                type    : "input", 
+                for_key : 1, 
+                attr    : 'placeholder="Masukkan Nama ..."'
+            },
+            { 
+                text    : "Kelulusan",
+                type    : "select", 
+                for_key : 3, 
+                arr     : [
+                    ["", "All"],
+                    ["1", "Lulus"],
+                    ["0", "Tidak Lulus"],
+                ]
+            }
+        ]
+    },
+    content_bottom :
+    {
+        form_filter :  [
+            { 
+                text    : "Nama Siswa",
+                type    : "input", 
+                for     : 1, 
+                attr    : 'placeholder="Masukkan Nama ..."'
+            },
+            { 
+                text    : "Kelulusan",
+                type    : "select", 
+                for     : 3, 
+                arr     : [
+                    ["", "All"],
+                    ["1", "Lulus"],
+                    ["0", "Tidak Lulus"],
+                ]
+            }
+        ]
+    }
+});</pre>
+                </div>
+                <h3>Output:</h3>
+                <div id="table-filter"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="insert-data">
+            <h1>Insert Data</h1>
+            <div class="p-x">
+                <div class="col-mx">
+                    Method of <strong>insertData</strong> is for inserting data to table's internal caches of data.
+                </div>
+                <div class="col-mx">
+                    <h3 class="dis-ib">NOTE:</h3> Please to always be consistent in using JSON, either <strong>Array</strong> or <strong>Array of Object</strong> and <strong>length</strong> of array is same with your data before
+                </div>
+
+                <h3>Insert Array</h3>
+                <div class="col-mx">
+                    <span>If your table's internal caches of data is <strong>Array</strong> (also from <strong>init</strong> method to replace your table tag into Arjunane Table)</span>
+                </div>
+                <div class="col-mx">
+                    <strong>Example:</strong>
+                </div>
+                <div class="bg-b m-b-1">
+                    <pre>
+var setArTable = arTable.init("#table-insert", {
+    ...
+});
+
+document.getElementById("insert").addEventListener("click", function () { 
+    var insert = [ 101, "Arjuna", 70, 1, "Male", "2020-05-10", "Pekajangan"];
+    setArTable.insertData(insert);
+});</pre>
+                </div>
+
+                <h3>Insert Array of Object</h3>
+                <div class="col-mx">
+                    <span>If your table's internal caches of data is <strong>Array of Object</strong></span>
+                </div>
+                <div class="col-mx">
+                    <strong>Example:</strong>
+                </div>
+                <div class="bg-b m-b-1">
+                    <pre>
+var setArTable = arTable.init("#table-insert", {
+    ...
+});
+
+document.getElementById("insert").addEventListener("click", function () { 
+    var insert = {
+        "id"    : 101,
+        "name"  : "Arjunane",
+        "grade" : 70,
+        "passing": 1,
+        "birth" : "2020-05-10",
+        "place" : "Pekajangan"
+    };
+    setArTable.insertData(insert);
+});</pre>
+                </div>
+
+                <h3>Example inserting</h3>
+                <div class="bg-b m-b-1">
+                    <pre>
+var setArTable = arTable.init("#table-insert", {
+    url     : "json.json",
+    title   : "Data Orang",
+    thead   : ["ID", "Name", "Grade", "Passing", "Sex", "Birth", "Place"],
+    content_top :
+    { 
+        action : 
+        [
+            {
+                text    : "Insert Once",
+                type    : "success",
+                href    : "json/insert.json",
+                listener: function (data, event, index, req)
+                {
+                    event.preventDefault();
+                    req(this.href, function (res) {
+                        if(res.error === null && arTable.isJSON(res.result))
+                        {
+                            <i>// it will insert : [101,"Si Cantik",70,1,"Female","2020-04-18","Kedungwuni"]</i>
+                            setArTable.insertData(JSON.parse(res.result));
+                        }
+                        else
+                        {
+                            // Error
+                        }
+                    });
+                }
+            },
+            {
+                text    : "Insert Multiple",
+                type    : "info",
+                href    : "json/insert-multiple.json",
+                listener: function  (data, event, index, req)
+                {
+                    event.preventDefault();
+                    req(this.href, function (res) {
+                        if(res.error === null && arTable.isJSON(res.result))
+                        {
+                            <i>
+                                /*
+                                    it will insert :[
+                                        [30,"ter tamVan",60,0,"Male","2020-03-20","Pekalongan"],
+                                        [31,"tamVan dan Berani",20,0,"Female","2020-03-19","Pekalongan"]
+                                    ]
+                                */
+                            </i>
+                            setArTable.insertData(JSON.parse(res.result));
+                        }
+                        else
+                        {
+                            // Error
+                        }
+                    });
+                }
+            }
+        ]
+    }
+});</pre>
+                </div>
+                <h3>Output:</h3>
+                <div id="table-insert"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="update-data">
+            <h1>Update Data</h1>
+            <div class="p-x">
+                <div class="col-mx">
+                    Method of <strong>updateData</strong> is for updating data from table's internal caches of data.
+                </div>
+                <div class="col-mx">
+                    <h3 class="dis-ib">NOTE:</h3> Please to always be consistent in using JSON, either <strong>Array</strong> or <strong>Array of Object</strong>
+                </div>
+                
+                <strong>updateData</strong> takes 2 parameters:
+                <ul>
+                    <li>key:
+                        <ul>
+                            <li>integer or array of integer</li>
+                        </ul>
+                    </li>
+                    <li>
+                        data
+                        <ul>
+                            <li>array or array of object</li>
+                        </ul>
+                    </li>
+                </ul>
+                <h3>Update Array</h3>
+                <div class="col-mx">
+                    <span>If your table's internal caches of data is <strong>Array</strong> (also from <strong>init</strong> method to replace your table tag info Arjunane Table)</span>
+                </div>
+                <div class="col-mx">
+                    <strong>Example:</strong>
+                </div>
+                <div class="bg-b m-b-1">
+                    <pre>
+var updateArTable = arTable.init("#table-update", {
+    ...
+});
+
+document.getElementById("update").addEventListener("click", function () { 
+    var update = [ 101, "Arjuna", 70, 1, "Male", "2020-05-10", "Pekajangan"];
+    updateArTable.updateData(1, update); <i>// this will update the second index</i>
+});</pre>
+                </div>
+
+                <h3>Update Array of Object</h3>
+                <div class="col-mx">
+                    <span>If your table's internal caches of data is <strong>Array of Object</strong></span>
+                </div>
+                <div class="col-mx">
+                    <strong>Example:</strong>
+                </div>
+                <div class="bg-b m-b-1">
+                    <pre>
+var updateArTable = arTable.init("#table-insert", {
+    ...
+});
+
+document.getElementById("update").addEventListener("click", function () { 
+    var update = {
+        "id"    : 101,
+        "name"  : "Arjunane",
+        "grade" : 70,
+        "passing": 1,
+        "birth" : "2020-05-10",
+        "place" : "Pekajangan"
+    };
+    updateArTable.updateData(1, update); <i>// this will update the second index</i>
+});</pre>
+                </div>
+
+                <h3>Update for specific row</h3>
+                <div class="bg-b m-b-1">
+                    <pre>
+var update =  { 
+    0 : 101,  <i>// ID</i>
+    2 : 70,  <i>// Grade</i>
+    6 : "Pekajangan" <i>// Place</i>
+};
+updateArTable.updateData(1, update);
+
+<i>// <strong>OR</strong></i>
+
+var update =  { 
+    "id"    : 101,  <i>// ID</i>
+    "grade" : 70,  <i>// Grade</i>
+    "place" : "Pekajangan" <i>// Place</i>
+};
+updateArTable.updateData(1, update);
+                    </pre>
+                </div>
+
+                <h3>Update for specific multiple row</h3>
+                <div class="bg-b m-b-1">
+                    <pre>
+var update =  [
+    { 
+        0 : 101,  <i>// ID</i>
+        2 : 70,  <i>// Grade</i>
+        6 : "Pekajangan" <i>// Place</i>
+    },
+    { 
+        0 : 50,  <i>// ID</i>
+        2 : 69,  <i>// Grade</i>
+        6 : "Pekalongan" <i>// Place</i>
+    }
+];
+var index = [ 10, 15];
+updateArTable.updateData(index, update);
+
+<i>// <strong>OR</strong></i>
+
+var update =  [
+    { 
+        "id"    : 101,  <i>// ID</i>
+        "grade" : 70,  <i>// Grade</i>
+        "place" : "Pekajangan" <i>// Place</i>
+    },
+    { 
+        "id"    : 50,  <i>// ID</i>
+        "grade" : 69,  <i>// Grade</i>
+        "place" : "Pekalongan" <i>// Place</i>
+    }
+];
+var index = [ 10, 15];
+updateArTable.updateData(index, update);
+                    </pre>
+                </div>
+
+                <h3>Example Updating</h3>
+                <div class="bg-b m-b-1">
+                    <pre>
+var updateArTable = arTable.init("#table-update", {
+    url     : "json.json",
+    title   : "Data Orang",
+    checkable: true,
+    thead   : ["ID", "Name", "Grade", "Passing", "Sex", "Birth", "Place"],
+    action  : [
+        {
+            text    : "Edit specific",
+            cls     : "btn t1 blue",
+            href    : "json/update.json",
+            listener: function  (data, event, index, req, element)
+            {
+                event.preventDefault();
+                var url = element.getAttribute("href");
+                <i>
+                    /*
+                        output of res.result is :
+                        {
+                            "0" : 101,
+                            "1" : "Arjunane tamVan",
+                            "6" : "Kajen"
+                        }
+                    */
+                </i>
+                req(url, function (res) {
+                    if(res.error === null && arTable.isJSON(res.result))
+                    {
+                        updateArTable.updateData(index, JSON.parse(res.result));
+                    }
+                    else
+                    {
+                        // Error
+                    }
+                });
+            }
+        }
+    ]
+    content_top :
+    { 
+        action : 
+        [
+            {
+                text    : "Update 2 data of Selected",
+                type    : "success",
+                href    : "json/update-multiple.json",
+                listener: function (data, event, index, req)
+                {
+                    event.preventDefault();
+                    if(data.length > 0)
+                    {
+                        req(this.href, function (res) {
+                            if(res.error === null && arTable.isJSON(res.result))
+                            {
+                                updateArTable.updateData(index, JSON.parse(res.result));
+                            }
+                            else
+                            {
+                                // Error
+                            }
+                        });
+                    }
+                    else
+                    {
+                        alert("Please, select at least one row");
+                    }
+                }
+            }
+        ]
+    }
+});</pre>
+                </div>
+                <h3>Output:</h3>
+                <div id="table-update"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="delete-data">
+            <h1>Delete Data</h1>
+            <div class="p-x">
+                <div class="col-mx">
+                    Method of <strong>deleteData</strong> is for deleting data into table's internal caches of data.
+                </div>
+                <div class="col-mx">
+                    <strong>deleteData</strong> take one parameter
+                    <ul>
+                        <li>key : integer or array of integer</li>
+                    </ul>
+                </div>
+                <div class="col-mx">
+                    <strong>Example:</strong>
+                </div>
+                <div class="bg-b m-b-1">
+                    <pre>
+var deleteArTable = arTable.init("#table-delete", {
+    ...
+});
+
+document.getElementById("delete").addEventListener("click", function () { 
+    deleteArTable.deleteData(5); <i>// it will delete from internal caches of data where the index is 5</i>
+});
+
+<i><strong>OR</strong></i>
+
+document.getElementById("delete").addEventListener("click", function () { 
+    var index = [10, 15];
+    deleteArTable.deleteData(index);
+});</pre>
+                </div>
+
+                <h3>Example Deleting</h3>
+                <div class="bg-b m-b-1">
+                    <pre>
+var deleteArTable = arTable.init("#table-delete", {
+    url     : "json.json",
+    title   : "Data Orang",
+    checkable: true,
+    thead   : ["ID", "Name", "Grade", "Passing", "Sex", "Birth", "Place"],
+    action  : [
+        {
+            text    : "Delete",
+            cls     : "btn t1 red",
+            href    : "json/update.json",
+            listener: function  (data, event, index, req, element)
+            {
+                event.preventDefault();
+                var url = element.getAttribute("href");
+                req(url, function (res) {
+                    if(res.error === null && arTable.isJSON(res.result))
+                    {
+                        var json = JSON.parse(res.result);
+                        if(json.hasil)
+                        {
+                            deleteArTable.deleteData(index);
+                        }
+                    }
+                    else
+                    {
+                        // Error
+                    }
+                });
+            }
+        }
+    ]
+    content_top :
+    { 
+        action : 
+        [
+            {
+                text    : "Delete Selected",
+                type    : "success",
+                href    : "json/update-multiple.json",
+                listener: function (data, event, index, req)
+                {
+                    event.preventDefault();
+                    if(data.length > 0)
+                    {
+                        req(this.href, function (res) {
+                            if(res.error === null && arTable.isJSON(res.result))
+                            {
+                                var json = JSON.parse(res.result);
+                                if(json.hasil)
+                                {
+                                    deleteArTable.deleteData(index);
+                                }
+                            }
+                            else
+                            {
+                                // Error
+                            }
+                        });
+                    }
+                    else
+                    {
+                        alert("Please, select at least one row");
+                    }
+                }
+            }
+        ]
+    }
+});</pre>
+                </div>
+                <h3>Output:</h3>
+                <div id="table-delete"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="show-alert">
+            <h1>Show Alert</h1>
+            <div class="p-x">
+                <div class="col-mx">
+                    The <strong>showAlert</strong> method displays an alert box with a specified message and an OK button.
+                </div>
+                <div class="col-mx">
+                    <strong>showAlert</strong> have 4 keys:
+                    <ul>
+                        <li>
+                            type
+                            <ul>
+                                <Li>warning</Li>
+                                <Li>info (<strong>Default</strong>)</Li>
+                                <Li>success</Li>
+                                <Li>danger</Li>
+                            </ul>
+                        </li>
+                        <li>title : string (Default is : "INFO")</li>
+                        <li>text : string (Default is : "Info Alert")</li>
+                        <li>button_text : string (Default is : "OK")</li>
+                    </ul>
+                </div>
+                <h3>Example</h3>
+                <div class="bg-b col-mx">
+                    <pre>
+var alertArTable = arTable.init("#table-alert", {
+    ...
+});
+
+document.getElementById("alert-button").addEventListener("click", function () {
+    alertArTable.showAlert({
+        type        : "success",
+        title       : "BERHASIL",
+        text        : "Successfully deleted the data",
+        button_text : "Ok"
+    });
+});</pre>
+                </div>
+                
+                <h3>Example Show Alert</h3>
+                <div class="bg-b col-mx">
+                    <pre>
+var alertArTable = arTable.init("#table-alert", {
+    url     : "json/json.json",
+    title   : "Data Orang",
+    checkable: true,
+    thead   : ["ID", "Name", "Grade", "Passing", "Sex", "Birth", "Place"],
+    action  : 
+    [
+        {
+            text    : "Delete",
+            cls     : "btn t1 red",
+            href    : "json/delete.json",
+            listener: function(data, event, index, req, element) 
+            {
+                event.preventDefault();
+                var url = element.getAttribute("href");
+                req(url, function(res) {
+                    if (res.error === null && arTable.isJSON(res.result)) 
+                    {
+                        var json = JSON.parse(res.result);
+                        if (json.hasil) {
+                            var name = data[1];
+                            alertArTable.deleteData(index);
+                            alertArTable.showAlert({
+                                type: "success",
+                                title: "BERHASIL",
+                                text: "Successfully deleted the data : " + name,
+                                button_text: "Ok"
+                            });
+                        }
+                    } else {
+                        // Error
+                    }
+                });
+            }
+        }
+    ],
+    content_top: 
+    {
+        action: 
+        [
+            {
+                text    : "Delete Selected",
+                type    : "success",
+                href    : "json/delete.json",
+                listener: function(data, event, index, req) {
+                    event.preventDefault();
+                    if (data.length > 0) 
+                    {
+                        req(this.href, function(res) {
+                            if (res.error === null && arTable.isJSON(res.result)) 
+                            {
+                                var json = JSON.parse(res.result);
+                                if (json.hasil) {
+                                    alertArTable.deleteData(index);
+                                    alertArTable.showAlert({
+                                        type: "success",
+                                        title: "BERHASIL",
+                                        text: "Successfully deleted the data",
+                                        button_text: "Ok"
+                                    });
+                                }
+                            } else {
+                                // Error
+                            }
+                        });
+                    } else {
+                        alertArTable.showAlert({
+                            type: "danger",
+                            title: "Ops",
+                            text: "Please at least choose one row",
+                            button_text: "Ok"
+                        });
+                    }
+                }
+            }
+        ]
+    }
+});
+                    </pre>
+                </div>
+
+                <h3>Output:</h3>
+                <div id="table-alert"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="show-confirm">
+            <h1>Show Confirm</h1>
+            <div class="p-x">
+                <div class="col-mx">
+                    <span>The <strong>showConfirm</strong> method displays a dialog box with a specified message, along with an OK and a Cancel button.</span>
+                </div>
+                <div class="col-mx">
+                    <span>A confirm box is often used if you want the user to verify or accept something.</span>
+                </div>
+                <div class="col-mx">
+                    <strong>showConfirm</strong> takes 3 arguments:
+                    <ul>
+                        <li>Object
+                            <ul>
+                                <li>
+                                    type
+                                    <ul>
+                                        <Li>warning</Li>
+                                        <Li>info (<strong>Default</strong>)</Li>
+                                        <Li>success</Li>
+                                        <Li>danger</Li>
+                                    </ul>
+                                </li>
+                                <li>title   : string (Default is : "INFO")</li>
+                                <li>text    : string (Default is : "Info Confirm")</li>
+                                <li>accept_text : string (Default is : "Yes")</li>
+                                <li>abort_text : string (Default is : "No")</li>
+                            </ul>
+                        </li>
+                        <li>Callback Accept : action method</li>
+                        <li>Callback Abort : action method</li>
+                    </ul>
+                </div>
+                
+                <h3>Example</h3>
+                <div class="bg-b col-mx">
+                    <pre>
+var confirmArTable = arTable.init("#table-confirm", {
+    ...
+});
+
+document.getElementById("confirm-button").addEventListener("click", function () {
+    confirmArTable.showConfirm({
+        type        : "success",
+        title       : "PERINGATAN",
+        text        : "Are you sure want to delete this data?",
+        accept_text : "Ok",
+        abort_text  : "No"
+    });
+});</pre>
+                </div>
+
+                <h3>Example Show Confirm</h3>
+                <div class="bg-b col-mx">
+                    <pre>
+var confirmArTable = arTable.init("#table-confirm", {
+    url     : "json/json.json",
+    title   : "Data Orang",
+    checkable: true,
+    thead   : ["ID", "Name", "Grade", "Passing", "Sex", "Birth", "Place"],
+    action  : 
+    [
+        {
+            text    : "Delete",
+            cls     : "btn t1 red",
+            href    : "json/delete.json",
+            listener: function(data, event, index, req, element) 
+            {
+                event.preventDefault();
+                var name = data[1];
+                confirmArTable.showConfirm({
+                    type        : "danger",
+                    title       : "WARNING",
+                    text        : "Are you sure want to delete this data [&lt;strong>" + name + "&lt;/strong>]?",
+                    accept_text : "Ok",
+                    abort_text  : "No"
+                }, function () {
+
+                    var url = element.getAttribute("href");
+                    req(url, function(res) {
+                        if (res.error === null && arTable.isJSON(res.result)) 
+                        {
+                            var json = JSON.parse(res.result);
+                            if (json.hasil) {
+                                confirmArTable.deleteData(index);
+                                confirmArTable.showAlert({
+                                    type: "success",
+                                    title: "BERHASIL",
+                                    text: "Successfully deleted the data : " + name,
+                                    button_text: "Ok"
+                                });
+                            }
+                        } else {
+                            // Error
+                        }
+                    });
+
+                });
+                
+            }
+        }
+    ],
+    content_top: 
+    {
+        action: 
+        [
+            {
+                text    : "Delete Selected",
+                type    : "success",
+                href    : "json/delete.json",
+                listener: function(data, event, index, req) {
+                    event.preventDefault();
+                    if (data.length > 0) 
+                    {
+                        confirmArTable.showConfirm({
+                            type        : "danger",
+                            title       : "WARNING",
+                            text        : "Are you sure want to delete these selected data?",
+                            accept_text : "Ok",
+                            abort_text  : "No"
+                        }, function () {
+                            req(this.href, function(res) {
+                                if (res.error === null && arTable.isJSON(res.result)) 
+                                {
+                                    var json = JSON.parse(res.result);
+                                    if (json.hasil) {
+                                        confirmArTable.deleteData(index);
+                                        confirmArTable.showAlert({
+                                            type: "success",
+                                            title: "BERHASIL",
+                                            text: "Successfully deleted the data",
+                                            button_text: "Ok"
+                                        });
+                                    }
+                                } else {
+                                    // Error
+                                }
+                            });
+        
+                        });
+                        
+                    } else {
+                        confirmArTable.showAlert({
+                            type: "danger",
+                            title: "Ops",
+                            text: "Please at least choose one row",
+                            button_text: "Ok"
+                        });
+                    }
+                }
+            }
+        ]
+    }
+});</pre>
+                </div>
+
+                <h3>Output:</h3>
+                <div id="table-confirm"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="filter">
+            <h1>Filter</h1>
+            <div class="p-x">
+                <div class="col-mx">
+                    <span>Sometimes you want to filter the data from the outside without use <strong>form_filter</strong> from <strong>content_top</strong> or <strong>content_bottom</strong>, then the <strong>filter</strong> method will useful for you.</span>
+                </div>
+                <div class="col-mx">
+                    <span>The <strong>filter</strong> method takes 2 parameters:</span>
+                    <ul>
+                        <li>value : value from your <strong>input</strong> or <strong>select option</strong> and anymore</li>
+                        <li>
+                            index : set your index to filter for specific data from your <strong>index</strong>
+                            <ul>
+                                <li>array of integer <strong>OR</strong> array of string</li>
+                                <li>Use "<strong>*</strong>" to find from all index</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <h3>Example :</h3>
+                <div class="bg-b col-mx">
+                    <pre>
+var filterArTable = arTable.init("#table-filter", {
+    ...
+});
+
+document.getElementById("input-name").addEventListener("input", function () {
+    var value        = this.value;
+    var findForIndex = 1;
+    filterArTable.filter(value, findForIndex);
+});</pre>
+                </div>
+                <h3>Output:</h3>
+                <div class="col-mx cf">
+                    <div class="col-md-6 left">
+                        <div class="f-input">
+                            <span>Name</span>
+                            <input type="text" id="input-name" placeholder="Find Name ...">
+                        </div>
+                    </div>
+                    <div class="col-md-6 left">
+                        <div class="f-input">
+                            <span>Grade</span>
+                            <input type="text" id="input-grade" placeholder="Find Grade ...">
+                        </div>
+                    </div>
+                </div>
+                <div id="table--filter"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="req">
+            <h1>Req</h1>
+            <div class="p-x">
+                <div class="col-mx">
+                    The <strong>req</strong> method is used to request to your server
+                </div>
+                <div class="col-mx">
+                    <span>It takes 2 parameters :</span>
+                    <ul>
+                        <li>url : string</li>
+                        <li>callback : method<br>
+                            This method takes 2 keys:
+                            <ul>
+                                <li>error
+                                    <ul>
+                                        <li>status</li>
+                                        <li>statusText</li>
+                                    </ul>
+                                </li>
+                                <li>result</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <h3>Exmaple:</h3>
+                <div class="bg-b col-mx">
+                    <pre>
+arTable.req("your-url", function (res) {
+    if(res.error !== null)
+    {
+        console.log(res.result);
+        <i>// success</i>
+    }
+    else
+    {
+        console.log(res.error.status);
+        console.log(res.error.statusText);
+        <i>// error</i>
+    }
+});</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="others">
+            <h1>Others</h1>
+            <div class="p-x">
+                <ul>
+                    <li>getData()
+                        <div class="col-mx">
+                            The <strong>getData()</strong> method is used to get all data from your first json (from first request)
+                        </div>
+                    </li>
+                    <li>getCurrentData()
+                        <div class="col-mx">
+                            The <strong>getCurrentData()</strong> method is used to get current data from current page
+                        </div>
+                    </li>
+                    <li>getAllCurrentData()
+                        <div class="col-mx">
+                            The <strong>getAllCurrentData()</strong> method is used to get all current data (include filter/search and order by)
+                        </div>
+                    </li>
+                    <li>getCheckedData()
+                        <div class="col-mx">
+                            The <strong>getCheckedData()</strong> method is used to get all checked data
+                        </div>
+                    </li>
+                    <li>clearChecked()
+                        <div class="col-mx">
+                            The <strong>clearChecked()</strong> method used to clear all checked input
+                        </div>
+                    </li>
+                </ul>
+                <h3>Example</h3>
+                <div class="bg-b col-mx">
+                    <pre>
+
+                    </pre>
+                </div>
+
+                <h3>Output:</h3>
+                <strong>Show Data</strong>
+                <div class="hg-50 ov-a col-mx">
+                    <pre id="show-data"></pre>
+                </div>
+                <button id="clear-checked">Clear Checked</button>
+                <button id="get-data">Get Data</button>
+                <button id="get-checked">Get Checked Data</button>
+                <button id="get-current">Get Current Data</button>
+                <button id="get-all-current">Get All Current Data</button>
+                <div id="table-others"></div>
+            </div>
+        </div>
+    </div>
+    <script src="arjunane_table.js"></script>
+    <script src="json/main.js"></script>
+</body>
+
+</html>
