@@ -1068,6 +1068,11 @@
                         tr.classList.remove("aktif");
                         _self.__removeCheckData(index);
                     }
+                    
+                    if(_self.data_checked.length === 0)
+                    {
+                        _self.container[0].getElementsByClassName('--at-checkbox-container')[0].checked = false;
+                    }
                 });
             }
         }
@@ -1991,7 +1996,9 @@
         if(this.json !== null && this.isCheckable)
         {
             var container = this.container[0],
-                checkboxs = container.getElementsByTagName("tbody")[0].getElementsByClassName("--at-check-box");
+                checkboxs = container.getElementsByTagName("tbody")[0].getElementsByClassName("--at-check-box"),
+                main_checkbox = container.getElementsByClassName('--at-checkbox-container')[0];
+            main_checkbox.checked = false;
             for(var i = (checkboxs.length - 1); i >= 0; i--)
             {
                 var tr = checkboxs[i].parentElement.parentElement;
