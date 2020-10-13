@@ -628,5 +628,5 @@ document.getElementById('input-name').addEventListener('input', function () {
 
 document.getElementById('input-grade').addEventListener('input', function () {
     var value = this.value;
-    filterArTable.filter(value, 2);
+    filterArTable.filter(value, 2, "gte");
 });

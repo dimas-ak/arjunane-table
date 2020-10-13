@@ -1188,11 +1188,11 @@
         // jika json tidak ada atau panjang json === 0 maka dikembalikan
         if(typeof this.json.length === 'undefined' || this.json.length === 0) return;
 
-        var filter      = "indexOf";
+        var filter      = "io";
         var gd          = global_data[this.index];
         var tmp_json    = new Array();
 
-        if(typeof _filter !== 'undefined') filter = _filter;
+        if(typeof _filter !== 'undefined') filter = validationFilterSearches(_filter);
 
         var index = gd["is_array"] ? parseInt(_for) : _for;
 
@@ -1241,7 +1241,8 @@
 
                 for(var key in data)
                 {
-                    if(value !== null && data[key].toString().indexOf(value) !== -1) tmp_json.push(data);
+                    // if(value !== null && data[key].toString().indexOf(value) !== -1) tmp_json.push(data);
+                    if(value !== null && isFindSearches(value, data[key], filter) ) tmp_json.push(data);
                 }
             }
             else
@@ -1250,7 +1251,8 @@
                 {
                     // jika arr_search sesuai key tidak null
                     // dimana jika null berarti tidak ada yang perlu di cari
-                    if(arr_search[key] !== null && data[key].toString().indexOf(arr_search[key]) !== -1) isFound += 1;
+                    // if(arr_search[key] !== null && data[key].toString().indexOf(arr_search[key]) !== -1) isFound += 1;
+                    if(arr_search[key] !== null && isFindSearches(arr_search[key], data[key], filter)) isFound += 1;
                 }
 
                 // apakah pencarian isFound sama dengan panjang/count dari length_value
@@ -1269,6 +1271,31 @@
         this.__setPagination();
         this.__setResult(null);
         this.__setTbody()
+    }
+
+    function validationFilterSearches(filter)
+    {
+        var arr = ['io', 'gt', 'lt', 'gte', 'lte', 'eq'];
+        for (var i = 0; i < arr.length; i++) {
+            var ini = arr[i];
+            if(filter === ini) return ini;
+        }
+        return arr[0];
+    }
+
+    function isFindSearches(value_input, value_key, filter)
+    {
+        if(filter === "io" && value_key.toString().indexOf(value_input) !== -1) return true;
+        else if(
+            (filter === "gt" && parseFloat(value_key) > parseFloat(value_input)) || 
+            (filter === "gte" && parseFloat(value_key) >= parseFloat(value_input))
+            ) return true;
+        else if(
+            (filter === "lt" && parseFloat(value_key) < parseFloat(value_input)) || 
+            (filter === "lte" && parseFloat(value_key) <= parseFloat(value_input))
+            ) return true;
+        else if(filter === "eq" && value_input.toString() === value_key.toString()) return true;
+        return false;
     }
 
     arjunane_table.prototype.__removeOrderByTH = function ()

@@ -1624,14 +1624,27 @@ var confirmArTable = arTable.init("#table-confirm", {
                     <span>Sometimes you want to filter the data from the outside without use <strong>form_filter</strong> from <strong>content_top</strong> or <strong>content_bottom</strong>, then the <strong>filter</strong> method will useful for you.</span>
                 </div>
                 <div class="col-mx">
-                    <span>The <strong>filter</strong> method takes 2 parameters:</span>
+                    <span>The <strong>filter</strong> method takes 3 parameters:</span>
                     <ul>
                         <li>value : value from your <strong>input</strong> or <strong>select option</strong> and anymore</li>
                         <li>
                             index : set your index to filter for specific data from your <strong>index</strong>
                             <ul>
-                                <li>array of integer <strong>OR</strong> array of string</li>
-                                <li>Use "<strong>*</strong>" to find from all index</li>
+                                <li>integer <strong>OR</strong> string</li>
+                                <li>Use "<strong>*</strong>" to find from all index<br>
+                                    <strong>WARNING:</strong> when you use '*' (star) to find all your data, it will replacing all your searches before
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            Searches type
+                            <ul>
+                                <li>io : IndexOf() [<strong>default</strong>]</li>
+                                <li>eq : Equal ( === )</li>
+                                <li>gt : Greater than ( > )</li>
+                                <li>lt : Lower than ( < )</li>
+                                <li>gte : Greater than Equal ( >= )</li>
+                                <li>lte : Lower than Equal ( <= )</li>
                             </ul>
                         </li>
                     </ul>
@@ -1648,6 +1661,12 @@ document.getElementById("input-name").addEventListener("input", function () {
     var value        = this.value;
     var findForIndex = 1;
     filterArTable.filter(value, findForIndex);
+});
+
+document.getElementById("input-grade").addEventListener("input", function () {
+    var value        = this.value;
+    var findForIndex = 2;
+    filterArTable.filter(value, findForIndex, "gte");
 });</pre>
                 </div>
                 <h3>Output:</h3>
@@ -1660,7 +1679,7 @@ document.getElementById("input-name").addEventListener("input", function () {
                     </div>
                     <div class="col-md-6 left">
                         <div class="f-input">
-                            <span>Grade</span>
+                            <span>Grade (Greater than Equal)</span>
                             <input type="text" id="input-grade" placeholder="Find Grade ...">
                         </div>
                     </div>
