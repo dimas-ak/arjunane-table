@@ -7,6 +7,11 @@ Simple Library for table
 $ git clone https://github.com/dimas-ak/arjunane-table.git
 ```
 
+## Required
+```bash
+arjunane_table.js OR arjunane_table.min.js
+```
+
 Documentation : [Click Here](https://dimas-ak.web.app/documentation/arjunane-table)
 
 [Find More](https://dimas-ak.web.app)
