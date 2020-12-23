@@ -10,7 +10,74 @@
             return Object.prototype.toString.call(obj) === '[object Array]';
         }
     };
+    // https://tc39.github.io/ecma262/#sec-array.prototype.find
+    if (!Array.prototype.find) {
+        Object.defineProperty(Array.prototype, 'find', {
+        value: function(predicate) {
+            // 1. Let O be ? ToObject(this value).
+            if (this == null) {
+            throw TypeError('"this" is null or not defined');
+            }
     
+            var o = Object(this);
+    
+            // 2. Let len be ? ToLength(? Get(O, "length")).
+            var len = o.length >>> 0;
+    
+            // 3. If IsCallable(predicate) is false, throw a TypeError exception.
+            if (typeof predicate !== 'function') {
+            throw TypeError('predicate must be a function');
+            }
+    
+            // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
+            var thisArg = arguments[1];
+    
+            // 5. Let k be 0.
+            var k = 0;
+    
+            // 6. Repeat, while k < len
+            while (k < len) {
+            // a. Let Pk be ! ToString(k).
+            // b. Let kValue be ? Get(O, Pk).
+            // c. Let testResult be ToBoolean(? Call(predicate, T, « kValue, k, O »)).
+            // d. If testResult is true, return kValue.
+            var kValue = o[k];
+            if (predicate.call(thisArg, kValue, k, o)) {
+                return kValue;
+            }
+            // e. Increase k by 1.
+            k++;
+            }
+    
+            // 7. Return undefined.
+            return undefined;
+        },
+        configurable: true,
+        writable: true
+        });
+    }
+    if (!Array.prototype.indexOf)
+        Array.prototype.indexOf = (function(Object, max, min) {
+            "use strict"
+            return function indexOf(member, fromIndex) {
+            if (this === null || this === undefined)
+                throw TypeError("Array.prototype.indexOf called on null or undefined")
+
+            var that = Object(this), Len = that.length >>> 0, i = min(fromIndex | 0, Len)
+            if (i < 0) i = max(0, Len + i)
+            else if (i >= Len) return -1
+
+            if (member === void 0) {        // undefined
+                for (; i !== Len; ++i) if (that[i] === void 0 && i in that) return i
+            } else if (member !== member) { // NaN
+                return -1 // Since NaN !== NaN, it will never be found. Fast-path it.
+            } else                          // all else
+                for (; i !== Len; ++i) if (that[i] === member) return i 
+
+            return -1 // if the value was not found, then return -1
+            }
+    })(Object, Math.max, Math.min);
+
     var links       = document.getElementsByTagName("link"),
         isCSS_exist = false;
 
@@ -47,9 +114,12 @@
 
     var arjunane_table = function()
     {
-        this.version        = "1.0.0";
-        this.github         = "https://github.com/dimas-ak/";
-        this.developed_by   = "Dimas Awang Kusuma";
+        this.version                    = "1.0.1";
+        this.github                     = "https://github.com/dimas-ak/";
+        this.documentation_server_1     = "https://dimas-ak.web.app/documentation/arjunane-table";
+        this.documentation_server_2     = "https://dimas-ak.github.io/documentation/arjunane-table/";
+        this.developed_by               = "Dimas Awang Kusuma";
+        this.facebook                   = "https://www.facebook.com/arjunane.co.id";
     }
     /**
      * Object/obj
@@ -90,9 +160,30 @@
         this.obj            = obj;
         this.is_scrolled    = true;
         this.height         = false;
+        this.insert_column  = null;
+        this.max_page       = 0;
+
+        this.data          = new Array();
+
+        this.last_id_inserted  = 0;
+
+        this.total_inserted = 0;
+
+        this.removed_index  = new Array();
 
         this.accept_confirm = function () {};
         this.abort_confirm  = function () {};
+
+        this.on_complete    = function () {};
+        this.on_change      = function () {};
+        this.on_next_page   = function () {};
+        this.on_prev_page   = function () {};
+        this.on_jump_page   = function () {};
+        this.on_showing     = function () {};
+        this.on_filter      = function () {};
+        this.on_page_change = function () {};
+        this.on_row         = null;
+        this.on_tbody      = null;
 
         this.isCheckable    = false;
         this.isNumeric      = false;
@@ -108,6 +199,7 @@
             per_page        : 10,
             current_page    : 1,
             arr_search      : {},
+            arr_search_type : {},
             arr_object      : null,
             order_by_index  : null,
             is_asc          : true,
@@ -192,20 +284,25 @@
             this._str_selector  = selector;
         }
 
+        var url = null;
+
         if(obj)
         {
             this.isCheckable    = obj.checkable || false;
             this.isNumeric      = obj.numeric || false;
             this.action         = obj.action;
             this.popup_action   = obj.popup_action;
-            this.hide           = obj.hide;
+            this.hide           = obj.hide || new Array();
             this.is_scrolled    = obj.scrollable || this.is_scrolled;
             this.height         = obj.height || this.height;
             this.thead          = obj.thead || this.thead;
-            this.update_row     = obj.update_row;
-            if(obj && !obj.url && !obj.get_file && !isReplace) throw Error('\nPlease, at least set "url" or "get_file"');
+            // this.on_complete    = obj.on_complete || this.on_complete;
+            this.update_row     = obj.update_row || {};
+            this.insert_column  = obj.insert_column || null;
+            
+            if(obj && !obj.url && !obj.data && !isReplace) throw Error('\nPlease, at least set "url" or "data"');
 
-            var url = obj.url || obj.get_file;
+            url = obj.url;
         }
         
 
@@ -223,26 +320,62 @@
         // jika bukan replace()
         if(!isReplace)
         {
-            this.req(url, function (data) {
+            if(!obj.data)
+            {
+                this.req(url, function (data) {
 
-                if(data.error === null && IsJsonString(data.result))
+                    if(data.error === null && IsJsonString(data.result))
+                    {
+                        self.on_complete();
+    
+                        appendData(self, data, JSON.parse(data.result));
+    
+                        if(self.insert_column) self.__changeColumn();
+                    }
+                    else
+                    {
+                        var msg =   "<strong>Selector</strong> : " + self._str_selector + "<br>" +
+                                    "<strong>URL</strong> : " + url + "<br>" +
+                                    "<strong>Messages</strong> : <br>" + data.result;
+    
+                        self.showAlert({
+                            type    : "danger", 
+                            title   : "Ops, something went wrong !",
+                            text    : msg
+                        });
+                    }
+        
+                });
+            }
+            else
+            {
+                if(Array.isArray(self.data))
                 {
-                    appendData(self, data, JSON.parse(data.result))
+                    //this.json = obj.array;
+
+                    var last = performance.now();
+                    dt["time"] = ((last - now % 60000) / 1000).toFixed(2);
+
+                    appendData(self, dt, obj.data);
+        
+                    self.on_complete();
+
+                    if(self.insert_column) self.__changeColumn();
                 }
                 else
                 {
                     var msg =   "<strong>Selector</strong> : " + self._str_selector + "<br>" +
-                                "<strong>URL</strong> : " + url + "<br>" +
-                                "<strong>Messages</strong> : <br>" + data.result;
-
+                                "<strong>Messages</strong> : <br>" + "Data not valid";
+    
                     self.showAlert({
                         type    : "danger", 
                         title   : "Ops, something went wrong !",
                         text    : msg
                     });
                 }
-    
-            });
+                
+            }
+            
         }
         else
         {
@@ -251,6 +384,7 @@
             dt["time"] = ((last - now % 60000) / 1000).toFixed(2);
 
             appendData(self, dt, this.json)
+            self.on_complete();
         }
         
 
@@ -294,10 +428,10 @@
         var is_array = Array.isArray(json[0]) ? true : false;
 
         global_data[self.index]["is_array"] = is_array;
-
-        self.__normalizeData(json);
-
-        self.__setResult(data.time);
+        
+        if(data !== null)  self.__normalizeData(json);
+        
+        self.__setResult(data === null ? null : data.time);
 
         self.__setPagination();
 
@@ -309,7 +443,7 @@
         }
         else
         {
-            self.__setTbody();
+            self.__setTbody( data !== null ? true : undefined);
 
             if(self.isCheckable)
             {
@@ -385,6 +519,9 @@
                 self.__setResult();
                 self.__setPagination();
                 self.__setTbody();
+
+                self.on_jump_page();
+                self.on_page_change();
             });
 
             var th = container.getElementsByTagName("th");
@@ -439,7 +576,7 @@
                     if(self.isNumeric) minus += 1;
 
                     var key = self.isCheckable ? evt - minus : evt;
-                
+                    
                     self.__orderBy(key);
                     
                     var gd      = global_data[self.index],
@@ -465,6 +602,9 @@
                     self.__setResult();
                     self.__setPagination();
                     self.__setTbody();
+
+                    self.on_prev_page();
+                    self.on_page_change();
                 }
             });
 
@@ -476,6 +616,9 @@
                     self.__setResult();
                     self.__setPagination();
                     self.__setTbody();
+
+                    self.on_next_page();
+                    self.on_page_change();
                 }
             });
 
@@ -485,6 +628,9 @@
                 self.__setResult();
                 self.__setPagination();
                 self.__setTbody();
+
+                self.on_showing();
+                this.on_page_change();
             });
         }
     }
@@ -790,7 +936,7 @@
             self            = this,
             gd              = global_data[this.index],
             content_action  = document.getElementsByClassName(this.str_selector)[0].getElementsByClassName("--at-content-" + type)[0];
-                
+
             for(var i = 0; i < actions.length; i++)
             {
                 (function(i){
@@ -800,11 +946,12 @@
                         var params  = new Array();
                         var start   = gd["current_page"] === 1 ? 0 : (gd["current_page"] - 1) * gd["per_page"],
                             href    = action.href || "";
-
+                            
                         if(self.data_checked.length !== 0)
                         {
                             for(var p = start; p < self.data_checked.length; p++)
                             {
+                                var data = {};
                                 // periksa terlebih dahulu apakah data_checked[p] bernilai undefined
                                 // karena index nya bernilai tidak urut
                                 // karena user memilih checkbox nya secara acak
@@ -814,12 +961,17 @@
                                 // 4 [...data...] 
                                 // kemudian di normalisasikan melalui validasi apakah bernilai undefined?
                                 // jika tidak bernilai undefined, maka akan di masukkan/push ke variable params
-                                if(typeof self.data_checked[p] !== 'undefined')params.push(self.__setParameters(self.data_checked[p]));
+                                if(typeof self.data_checked[p] !== 'undefined')
+                                {
+                                    params.push(self.__setData(self.data_checked[p]));
+                                }
                             }
+                            
                         }
                         var url = typeof action.params !== 'undefined' ? href + action.params(params) : href; 
                         // jika listener ada
-                        if(typeof action.listener === 'function') action.listener(params, evt, self.index_checked, self.req);
+                        //if(typeof action.listener === 'function') action.listener(params, evt, self.index_checked, this);
+                        if(typeof action.listener === 'function') action.listener(params, evt, this);
                         // jika tidak langsung di alihkan ke halaman sesuai params atau href
                         else
                         { 
@@ -836,7 +988,7 @@
      * __setTbody()
      * digunakan untuk menambahkan dom HTML ke Tbody
      */
-    arjunane_table.prototype.__setTbody = function ()
+    arjunane_table.prototype.__setTbody = function (isFirst)
     {
         // reset data checkable and index for checkable
         this.data_checked = new Array();
@@ -856,7 +1008,6 @@
         // tmp_json digunakan menyimpan data array json
         // dimana tmp_json ini digunakan untuk __setParameters setiap klik action
         var tmp_json    = new Array();
-
         for(var i = start; i < datas.length; i++)
         {
             var data = datas[i];
@@ -942,7 +1093,7 @@
                     var change = this.update_row[json](this.__setParameters(data));
                     
                     if(typeof change !== 'string') throw Error(msg);
-
+                    
                     html += change;
                 }
                 else
@@ -986,9 +1137,9 @@
                     var act     = this.action;
                     (function (i, t){
                         tr.getElementsByClassName("--at-btn-action-" + t)[0].addEventListener("click", function (evt) {
-                            var params = _self.__setParameters(tmp_json[i]),
-                                value  = parseInt(this.getAttribute("value")); // mendapatkan nilai dari attribute value pada setiap a-href action di last-td
-                            if(typeof act[t].listener !== 'undefined') return act[t].listener(params, evt, value, _self.req, this);
+                            // var params = _self.__setParameters(tmp_json[i]),
+                            //     value  = parseInt(this.getAttribute("value")); // mendapatkan nilai dari attribute value pada setiap a-href action di last-td
+                            if(typeof act[t].listener !== 'undefined') return act[t].listener(_self.__setData(tmp_json[i]), evt, this);
                         });
                     })(i, t);
                 }
@@ -1037,9 +1188,9 @@
 
                     (function (i, t){
                         tr.getElementsByClassName("--at-btn-popup-action-" + t)[0].addEventListener("click", function (evt) {
-                            var params = _self.__setParameters(tmp_json[i]),
-                                value  = parseInt(this.getAttribute("value")); // mendapatkan nilai dari attribute value pada setiap a-href action di last-td
-                            if(typeof act[t].listener !== 'undefined') return act[t].listener(params, evt, value, _self.req, this);
+                            // var params = _self.__setParameters(tmp_json[i]),
+                            //     value  = parseInt(this.getAttribute("value")); // mendapatkan nilai dari attribute value pada setiap a-href action di last-td
+                            if(typeof act[t].listener !== 'undefined') return act[t].listener(_self.__setData(tmp_json[i]), evt, this);
                         });
                     })(i, t);
                 }
@@ -1076,6 +1227,37 @@
                 });
             }
         }
+        
+        // jika arTable.on("row", function) di set dan data dari tmp_json tidak sama dengan 0z 
+        if(this.on_row !== null && tmp_json.length > 0)
+        {
+            var td = this.container[0].getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+            
+            for(var i = 0; i < td.length; i++)
+            {
+                var json = tmp_json[i];
+                var parent = td[i];
+                //var index  = is_array ? json[json.length - 1] : json["primary_index"];
+                // index : menyesuaikan urutan data (index) dari json awal (saat pertama kali init)
+                // i : merupakan urutan dari setiap tr pada tbody
+                //this.on_row(parent, this.__setParameters(json), index, i);
+                this.on_row(parent, this.__setData(json), i);
+            }
+        }
+
+        // jika arTable.on("column", function) di set dan data dari tmp_json tidak sama dengan 0z
+        if(this.on_tbody !== null && tmp_json.length > 0)
+        {
+            var tbody = this.container[0].getElementsByTagName("tbody")[0];
+            
+            this.on_tbody(tbody);
+        }
+
+        // jika bukan pertama kali __setTbody
+        // maka this.on_change event akan tereksekusi
+        // hal ini untuk menghindari duplikasi event dari this.on_change
+        // saat pertama kali init
+        if(typeof isFirst === 'undefined') this.on_change();
     }
 
     /**
@@ -1095,8 +1277,25 @@
      */ 
     arjunane_table.prototype.__removeCheckData = function (index)
     {
+        if(this.data_checked.length === 1)
+        {
+            this.data_checked = new Array();
+            this.index_checked = new Array();
+            return;
+        }
        this.data_checked.splice(index, 1);
        this.index_checked.splice(index, 1);
+    }
+
+    arjunane_table.prototype.__setData = function (data)
+    {
+        var is_array = global_data[this.index]["is_array"];
+        var dt = {};
+
+        dt["key"]   = is_array ? data[data.length - 1] : data["primary_index"];
+        dt["data"]  = this.__setParameters(data);
+
+        return dt;
     }
 
     /**
@@ -1130,7 +1329,7 @@
                             clearTimeout(timeout);
                             // data akan di eksekusi setelah setengah detik
                             timeout = setTimeout(function () {
-                                _self.filter(value, ini.for_key, ini.filter);
+                                _self.filter(value, ini.for_key, ini.filter_type);
                             }, 500);
                         });
                     })(i);
@@ -1164,7 +1363,7 @@
                             clearTimeout(timeout);
                             // data akan di eksekusi setelah setengah detik
                             timeout = setTimeout(function () {
-                                _self.filter(value, ini.for_key, ini.filter);
+                                _self.filter(value, ini.for_key, ini.filter_type);
                             }, 500);
                         });
                     })(i);
@@ -1200,9 +1399,21 @@
 
         if(typeof gd["arr_search"][index] === 'undefined') throw Error('\nUndefined index or key for : ' + index);
 
+        var arr_search      = gd["arr_search"],
+            arr_search_type = gd["arr_search_type"],
+            length_value    = 0;
 
         // jika _for tidak sama dengan * (semua index)
-        if(_for !== "*") gd["arr_search"][index] = value;
+        if(_for !== "*")
+        { 
+            gd["arr_search"][index] = value;
+
+            arr_search_type[_for] = filter;
+        }
+        else
+        {
+            arr_search_type = {};
+        }
         
         // length_value digunakan untuk menge-check setiap pilihan pada inputan
         // misal value input _for (untuk) index 3
@@ -1223,13 +1434,12 @@
          * dimana harus ada 2 kesesuaian data antara index ke 3 dan 4
          * dimana index ke 3 harus ada "Bejo" dan index ke 4 harus ada "1"
          */
-        var arr_search      = gd["arr_search"],
-            length_value    = 0;
+
         for(var i in gd["arr_search"])
         {
             if(gd["arr_search"][i] !== null) length_value += 1;
         }
-
+        
         for(var i = 0; i < this.json.length; i++)
         {
             var data    = this.json[i];
@@ -1252,7 +1462,7 @@
                     // jika arr_search sesuai key tidak null
                     // dimana jika null berarti tidak ada yang perlu di cari
                     // if(arr_search[key] !== null && data[key].toString().indexOf(arr_search[key]) !== -1) isFound += 1;
-                    if(arr_search[key] !== null && isFindSearches(arr_search[key], data[key], filter)) isFound += 1;
+                    if(arr_search[key] !== null && isFindSearches(arr_search[key], data[key], arr_search_type[key] )) isFound += 1;
                 }
 
                 // apakah pencarian isFound sama dengan panjang/count dari length_value
@@ -1270,7 +1480,9 @@
         this.__removeOrderByTH();
         this.__setPagination();
         this.__setResult(null);
-        this.__setTbody()
+        this.__setTbody();
+
+        this.on_filter();
     }
 
     function validationFilterSearches(filter)
@@ -1407,7 +1619,8 @@
                                 // 100/25 = 4, dimana 4 merupakan bilangan bulat
                                 page_normal > page_fixed ? parseInt(page_fixed) + 1 : parseInt(page_fixed),
             select          = container.getElementsByClassName("--select-jump")[0];
-            
+        
+        this.max_page = pages;
         if(pages === 0)
         {
             html = '<option value="">-</option>';
@@ -1426,7 +1639,9 @@
             }
             select.innerHTML = html;
 
-            select.getElementsByTagName("option")[gd["current_page"] - 1].selected = 'selected=""';
+            var selected = select.getElementsByTagName("option")[gd["current_page"] - 1]
+            if(typeof selected === 'undefined') return; 
+            selected.selected = 'selected=""';
 
             btn_page[0].classList.remove("aktif");
             btn_page[1].classList.remove("aktif");
@@ -1519,6 +1734,10 @@
 
                 var js = _json[json];
                 var i = 0;
+                
+                if(!is_array && typeof _json["primary_index"] !== 'undefined')
+                throw Error('\nOps, please do not use the word "primary_index" on your data');
+
                 for(var j in js)
                 {
                     // jika tidak ada index/key yang disembunyikan
@@ -1546,6 +1765,7 @@
         }
         gd["data"] = _json;
 
+        this.last_id_inserted = _json.length;
         this.json = _json;
         return this.json;
     }
@@ -1579,8 +1799,9 @@
         gd["current_page"]      = 1;
 
         gd["is_asc"]    = is_asc ? false : true;
-
+        
         var ind = arr_object[key];
+        
         copy_json.sort(function (a, b) {
             var dt_1 = (isDate(a[ind])) ? new Date(a[ind]) : a[ind],
                 dt_2 = (isDate(b[ind])) ? new Date(b[ind]) : b[ind];
@@ -1592,13 +1813,14 @@
             return (is_asc) ? a[ind].localeCompare(b[ind]) : b[ind].localeCompare(a[ind]);
         });
         
+        this.total_inserted = 0;
         this.json_search = copy_json;
     }
 
 
     arjunane_table.prototype.req    = function (url, callback)
     {
-        var xhttp = new XMLHttpRequest(),
+        var xhttp = new (XMLHttpRequest || ActiveXObject)('MSXML2.XMLHTTP.3.0'),
             start = performance.now();
         
         xhttp.onreadystatechange = function() {
@@ -1642,40 +1864,104 @@
 
         if(Array.isArray(_index) && _index.length === 0) return;
 
-        if(!Array.isArray(_index)) remove_json[_index] = _index;
+        if(!Array.isArray(_index)) remove_json.push(_index);
         else remove_json    =   _index;
         
+        
+        var json_search = this.json_search,
+            json = this.json;
+        
         /**
-         * perulangan di mulai dari index tertinggi
-         * supaya tidak terjadi kesalahan saat splice/menghapus data
-         * 9 : 9
-         * 7 : 7
-         * 5 : 5
-         * 3 : 3
-         * 0 : 0
+         * mengurutkan index / key
+         * dari terkecil sampai ke yang terbesar
          */
-        for (var i = remove_json.length -1; i >= pages; i--)
+        if(remove_json.length > 1)
         {
-            var index = remove_json[i];
-            if(this.json_search !== null)
+            remove_json.sort( function (a, b) {
+                return a - b;
+            });
+        }
+        
+        /**
+         * jika json_search / hasil pencarian (filter) atau pengurutan
+         * tidak sama dengan null
+         * maka akan di cari index (tr) sesuai data yang ingin di hapus
+         * 
+         * karena this.json_search dan this.json (jika kedua nya tidak bernilai null)
+         * mempunyai data yang berbeda
+         * 
+         * contoh data dari this.json :
+         * ["Mencoba Nama",     50]  = index 0
+         * ["Mencoba asiyap",   60]  = index 1
+         * ["Mencoba oke",      90]  = index 2
+         * ["Mencoba alright",  70]  = index 3
+         * ["Mencoba tamvan",   40]  = index 4
+         * 
+         * dan yang di cari (filter) ialah nilai yang lebih dari 60
+         * maka data dari this.json_search
+         * ["Mencoba asiyap",   60]  = index 0
+         * ["Mencoba oke",      90]  = index 1
+         * ["Mencoba alright",  70]  = index 2
+         */
+        if(json_search !== null)
+        {
+            // penyimpanan sementara index dari data yang akan dihapus
+            // sesuai dengan key
+            var find_index = new Array();
+            // mencari data sesuai halaman yang dipilih di dalam pencarian (filter)
+            for(var i = pages; i < gd["current_page"] * gd["per_page"]; i++)
             {
-                var ini = this.json_search[index];
-                if(typeof ini !== 'undefined')
-                {
-                    // mengambil index dari array terakhir
-                    // dimana array terakhir ialah primary index atau index key
-                    // untuk this.json
-                    index = is_array ? ini[ini.length - 1] : ini["primary_index"];
-                    this.json_search.splice(i, 1);
-                }
+                var data = json_search[i];
+
+                // biasanya halaman terakhir memiliki data 
+                // yang sedikit
+                // contoh :
+                // ada 3 halaman dan data yang ditampilkan ialah 10 per_page
+                // kemudian di halaman ke tiga hanya ada 3 data yang dapat ditampilkan
+                // berarti 3 data terakhir itu kurang dari per_page
+                // dimana per_page ialah 10 data
+                if(typeof data === 'undefined') break;
+
+                var key = is_array ? data[data.length - 1] : ini["primary_index"];
+                // jika ada
+                if(remove_json.indexOf(key) !== -1) find_index.push(i);
+                
+                // jika panjang dari find_index sama dengan remove_json
+                // maka looping akan dihentikan
+                if(find_index.length === remove_json.length) break;
             }
-            var ini = this.json[index];
-            if(typeof ini !== 'undefined') 
+
+            // menghapus data dari yang terbesar ke yang terkecil
+            // sesuai index
+            for(var i = (find_index.length - 1); i >= 0; i--)
             {
-                this.json.splice(index, 1);
+                var index = find_index[i];
+                json_search.splice(index, 1);
             }
         }
+        
+        // penyimpanan sementara index dari data yang akan dihapus
+        // sesuai dengan key
+        // find_index_json untuk seluruh data 
+        var find_index_json = new Array();
+        json.find( function (data, i) {
 
+            var key = is_array ? data[data.length - 1] : ini["primary_index"];
+            // jika ada
+            if(remove_json.indexOf(key) !== -1) find_index_json.push(i);
+            
+            // jika panjang dari find_index_json sama dengan remove_json
+            // maka looping akan dihentikan
+            if(find_index_json.length === remove_json.length) return true;
+        });
+        
+        // menghapus data dari yang terbesar ke yang terkecil
+        // sesuai index
+        for(var i = (find_index_json.length - 1); i >= 0; i--)
+        {
+            var index = find_index_json[i];
+            json.splice(index, 1);
+        }
         this.__setResult();
         this.__setTbody();
         this.__setPagination();
@@ -1683,34 +1969,309 @@
     }
 
     /**
-     * __addColumn
-     * digunakan untuk menambah column baru
+     * 
+     * @param {*} key : string || integer
+     * @param {*} obj 
+     * 
+     * updateColumn 
+     * digunakan untuk meng-update semua column (dari atas sampai bawah)
+     * 
+     * Object keys:
+     * 
+     ** thead : string
+     ** key   : string || integer
+     ** value : function -> return
+     ** html  : function -> return string
      */
-    arjunane_table.prototype.addColumn = function (columns)
+    arjunane_table.prototype.updateColumn = function (key, obj)
+    {
+        var gd          = global_data[this.index],
+            is_array    = gd["is_array"],
+            arr_object  = gd["arr_object"],
+            json        = this.json;
+
+        if(typeof key !== 'undefined' && typeof obj !== 'undefined' && typeof json.length !== 'undefined' && json.length > 0)
+        {
+            var addHtmlFunction = true; 
+            for(var i = 0; i < json.length; i++)
+            {
+                var ini = json[i];
+                
+                // validasi :
+                // -> jika data dari 'key' tidak ada
+                // -> jika data JSON berupa array dan key sama dengan panjang dari panjang object JSON yang di looping (sama dengan primary_index)
+                if(typeof ini[key] === 'undefined' || (is_array && parseInt(key) === ini.length) || (!is_array && key === 'primary_index'))
+                throw Error('\nCannot find data for "' + key + '" on updateColumn');
+
+                var k = is_array ? parseInt(key) : key;
+
+                var value = obj.value ? obj.value(this.__setParameters(ini)) : ini[k];
+                
+                ini[k] = value;
+
+                if(typeof obj.html !== 'undefined' && addHtmlFunction) 
+                {
+                    this.update_row[k] = obj.html;
+                }
+
+                addHtmlFunction = false;
+            }
+
+            this.__changeColumn(true);
+        }
+    }
+
+    /**
+     * 
+     * @param {array} columns
+     * deleteColumn digunakan untuk menghapus sejumlah column 
+     */
+    arjunane_table.prototype.deleteColumn = function (columns)
+    {
+        var gd          = global_data[this.index],
+            is_array    = gd["is_array"],
+            arr_object  = gd["arr_object"],
+            json        = this.json;
+            
+        if(columns && typeof columns.length !== 'undefined' && typeof json.length !== 'undefined' && json.length > 0)
+        {
+            
+            for(var i = 0; i < json.length; i++)
+            {
+                var ini = json[i];
+                for(var c = columns.length - 1; c >= 0; c--)
+                {
+                    var key = columns[c];
+                    // validasi :
+                    // -> jika data dari 'key' tidak ada
+                    // -> jika data JSON berupa array dan key sama dengan panjang dari panjang object JSON yang di looping (sama dengan primary_index)
+                    if(typeof ini[key] === 'undefined' || (is_array && parseInt(key) === ini.length) || (!is_array && key === 'primary_index'))
+                    throw Error('\nCannot find data for "' + key + '" on deleteColumn');
+
+                    // if(this.__isHide(key))
+                    // throw Error('\nCannot delete hidden column [key : "' + key + '"] on deleteColumn');
+                    
+                    if(is_array) ini.splice(parseInt(key), 1);
+                    else delete ini[key];
+                }
+            }
+            
+            var newArrSearch    = {},
+                newArrObject    = {},
+                exceptThead     = new Array(), // untuk menghapus thead
+                index           = 0;
+
+            // menghapus input pencarian
+            // dan menghapus beberapa key/index di dalam arr_object
+            // dimana arr_object itu hanya berisi key/index yang tidak ter-hide
+            for(var i in arr_object)
+            {
+                var is_find = false;
+                var key_object = arr_object[i];
+                for(var c = 0; c < columns.length; c++)
+                {
+                    var key = columns[c];
+                    // jika key_object dari arr_object sama dengan key yang akan di hapus (dari columns)
+                    if(key_object === key.toString()) 
+                    {
+                        // menghapus arr_search_type berdasarkan key yang akan dihapus
+                        if(typeof gd["arr_search_type"][key.toString()] !== 'undefined') delete gd["arr_search_type"][key.toString()];
+
+                        index++;
+                        // jika key tidak termasuk yang ter-hide
+                        // maka akan ditambahkan ke exceptThead 
+                        // karena value index/key yang disembunyikan tidak termasuk/ditampilkan ke thead
+                        if(!this.__isHide(key)) exceptThead.push(i);
+                        is_find = true; 
+                        break;
+                    }
+                }
+
+                // jika key/index tidak ditemukan maka
+                // arr_search (input pencarian) akan dihapus (dibuat null semua)
+                // arr_object akan diatur ulang menyesuaikan value yang ter-hide (jika ada)
+
+                // jika tidak ada yang sama antara key atau index yang akan dihapus
+                if(!is_find) 
+                {
+                    var _index = i - index;
+                    // membuat arr_search yang baru dan menyesuaikan index atau key yang telah terhapus
+                    newArrSearch[_index] = null;
+                    // jika data json ialah array
+                    // maka value dari arr_object ialah _index itu sendiri
+                    // jika tidak maka
+                    // key_object yang berupa string
+                    newArrObject[_index] = is_array ? _index.toString() : key_object.toString();
+                }
+            }
+            
+            // menghapus thead tertentu sesuai dengan index atau key yang dihapus
+            for(var t = exceptThead.length - 1; t >= 0; t--)
+            {
+                var index = exceptThead[t];
+                if(this.__isHide(index)) break;
+                this.thead.splice(index, 1);
+            }
+
+            // jika data yang dihapus masuk ke data yang ter-hide
+            // maka data yang ter-hide tersebut akan di hapus juga
+            for(var h = this.hide.length - 1; h >= 0; h--)
+            {
+                var key = this.hide[h];
+                // jika kondisi array dari hide mempunyai panjang berupa 0
+                // maka looping akan dihentikan
+                if(this.hide.length === 0) break;
+
+                for(var c = 0; c < columns.length; c++)
+                {
+                    var key_column = columns[c];
+                    if(key.toString() === key_column.toString()) this.hide.splice(h, 1);
+                }
+            }
+            
+            gd["arr_search"] = newArrSearch;
+            gd["arr_object"] = newArrObject;
+        }
+
+        this.__changeColumn(true);
+    }
+
+    /**
+     * __changeColumn
+     * digunakan untuk menambahkan atau meng-update column
+     * berdasarkan jumlah yang ingin ditambahkan
+     */
+    arjunane_table.prototype.__changeColumn = function (isDeleteOrUpdate)
+    {
+        // jika menambahkan sejumlah column atau dengan kata lain bukan menghapus sejumlah column dan meng-update sejumlah column
+        if(typeof isDeleteOrUpdate === 'undefined') this.__insertColumnInitialized(this.insert_column);
+        
+        this.__setTable();
+
+        this.container = document.getElementsByClassName(this.str_selector);
+
+        this.__setFormFilters();
+
+        var gd      = global_data[this.index],
+            self    = this;
+
+        listenerToAlert(self, this.container[0]);
+        
+        appendData(self, null, self.json);
+    }
+
+    /**
+     * __insertColumnInitialized
+     * digunakan untuk menambah data (column/ atas kebawah)
+     * Object keys:
+     * 
+     ** thead : string
+     ** key   : string || integer
+     ** value : function -> return
+     ** html  : function -> return string
+     */
+    arjunane_table.prototype.__insertColumnInitialized = function (columns)
     {
 
         var json        = this.json,
-            json_search = this.json_search,
-            container   = this.container[0];
-        console.log(json)
+            _self       = this,
+            gd          = global_data[this.index],
+            is_array    = gd["is_array"];
+
         if(columns && typeof columns.length !== 'undefined')
         {
             if(json.length > 0)
             {
-                for(var i = 0; i < json.length; i++)
+                insertColumnInitialized(json, columns, is_array, _self);
+            }
+        }
+    }
+
+    function insertColumnInitialized(json, columns, is_array, self)
+    {
+        var addHtmlFunction = true; 
+        for(var i = 0; i < json.length; i++)
+        {
+            var ini     = json[i],
+                length  = is_array ? ini.length - 1: null;
+            for(var c = 0; c < columns.length; c++)
+            {
+                var col = columns[c];
+                // jika "key" tidak di isi dan type dari json ialah array of object
+                if(typeof col.key === 'undefined' && !is_array) 
+                throw Error('\nPlease set parameters for "key" on insert_column or insertColumn');
+                
+                // jika "key" sudah ada sebelumnya dan type dari json ialah array of object
+                if(!is_array && typeof ini[col.key] !== 'undefined')
+                throw Error('\nOps data with key/index of "' + col.key + '" is exist on insert_column or insertColumn');
+
+                if(!is_array && typeof ini[col.key] !== 'undefined' && col.key === 'primary_index')
+                throw Error('\nOps, please do not use the word "primary_index" on insert_column or insertColumn');
+
+                var value = col.value ? col.value(self.__setParameters(ini)) : "";
+                
+                if(is_array) ini.splice( (length + c), 0, value);
+                else ini[col.key] = value;
+
+                if(typeof col.html !== 'undefined' && addHtmlFunction) 
                 {
-                    
+                    var key = is_array ? (length + c) : col.key;
+                    self.update_row[key] = col.html;
                 }
             }
 
-            if(json_search.length !== null)
+            addHtmlFunction = false;
+            // throw Error('\nOps, undefined index "' + j + '"\nAre you hide this index/key?');
+        }
+
+        var gd          = global_data[self.index];
+
+        // menambahkan key index untuk pencarian dan mengkosongkan string atau kata kunci pencarian
+        for(var search in gd["arr_search"])
+        {
+            gd["arr_search"][search] = null;
+        }
+        
+        // menambahkan key index untuk order by
+        var lengthArrObject = lengthOfObject(gd["arr_object"]);
+        for(var i = 0; i < columns.length; i++)
+        {
+            var col = columns[i];
+            var key = is_array ? lengthArrObject + i : col.key;
+            gd["arr_object"][lengthArrObject + i] = key;
+        }
+
+        if(typeof self !== 'undefined')
+        {
+            // menambahkan thead
+            for(var c = 0; c < columns.length; c++)
             {
-                for(var i = 0; i < json_search.length; i++)
-                {
-                    
-                }
+                var col = columns[c];
+                var thead = col.thead || "";
+                self.thead.push(thead);
+                
             }
         }
+        
+    }
+
+    /**
+     * @param {*} columns 
+     * 
+     * insertColumn
+     * 
+     * digunakan untuk menambah data (column/ atas kebawah)
+     * columns keys:
+     * 
+     ** thead : string
+     ** key   : string || integer
+     ** value : function -> return
+     ** html  : function -> return string
+     */
+    arjunane_table.prototype.insertColumn = function (columns)
+    {
+        this.__insertColumnInitialized(columns);
+        this.__changeColumn(true);
     }
 
     /**
@@ -1769,10 +2330,11 @@
         for(var i = 0; i < data.length; i++)
         {
             var dt      = data[i];
-            var length  = is_array ? this.json.length : Object.keys(this.json).length;
+            this.last_id_inserted += 1;
+            var length  = this.last_id_inserted;
 
             // menerapkan primary_index atau key di akhir array/index
-            is_array ? dt.push(this.json.length) : dt["primary_index"] = length;
+            is_array ? dt.push(length) : dt["primary_index"] = length;
 
             if(this.json_search !== null) 
             {
@@ -1782,9 +2344,11 @@
             new_data.push(dt);
         }
         
+        this.total_inserted += new_data.length;
+
         if(this.json_search !== null) this.json_search = new_data_search.concat(this.json_search);
         this.json = new_data.concat(this.json);
-
+        
         this.__setResult(null);
         this.__setPagination();
         this.__setTbody();
@@ -1803,6 +2367,7 @@
             is_array    = gd["is_array"],
             arr_object  = gd['arr_object'];
 
+        var json_search = this.json_search;            
         var pages       = (gd["current_page"] - 1) * gd["per_page"] ;
 
         var update_json = new Array();
@@ -1824,6 +2389,33 @@
 
         var index_find = 0;
 
+        // untuk menyimpan data key
+        var arr_find_json = new Array();
+        // untuk menyimpan data key dari hasil pencarian / order by
+        var arr_find_json_search = new Array();
+        
+        if(json_search !== null)
+        {
+            // menyesuaikan data sesuai halaman yang sedang di tampilkan
+            for(var i = pages; i < gd["current_page"] * gd["per_page"]; i++)
+            {
+                var data = json_search[i];
+                var _key = is_array ? data[data.length - 1] : ini["primary_index"];
+                // jika ada
+                if(update_json.indexOf(_key) !== -1) arr_find_json_search.push(i);
+                
+                // jika panjang arr_find_json_search sama dengan update_json
+                if(arr_find_json_search.length === update_json.length) break;
+            }
+        }
+        
+        this.json.find( function (data, i) {
+            var _key = is_array ? data[data.length - 1] : ini["primary_index"];
+            if(update_json.indexOf(_key) !== -1) arr_find_json.push(i);
+            
+            if(arr_find_json.length === update_json.length) return true;
+        });
+        
         // pengurutan dari update_json ialah
         /**
          * misal data array
@@ -1833,13 +2425,9 @@
          * 5 : 5
          * 7 : 7
          */
-        for(var i = 0; i < update_json.length; i++)
+        for(var i = 0; i < arr_find_json.length; i++)
         {
-            var k       = update_json[i];
-            // jadi jika k dimana update_json[ 1 ]
-            // maka akan bertype undefined
-            // karena array terdiri dari 0, 2, 3, 5, 7
-            if(typeof k === 'undefined') continue;
+            var k       = arr_find_json[i];
 
             // jika arr.length bernilai undefined
             // berarti arr = { 0 : "Asiyap", 2 : "Sudrun" }
@@ -1868,12 +2456,12 @@
              * maka index ke 3, 5, 7 akan ke replace arr[index_find / 1] atau [ "Gendeng", "Sakrim"] atau { "name" : "kempung", "grade" : 90}
              */
             else if(typeof arr[index_find] !== 'undefined') find = arr[index_find];
-
             // nilai index disamakan dengan variable k
             // dimana jika user belum menyortir atau filter data
             // singkatnya, jika this.json_search bernilai null
-            var index   = k;
-
+            
+            var index_tr = this.json_search !== null ? arr_find_json_search[i] : arr_find_json[i];
+            
             // k - pages
             // jika k mempunyai nilai 2
             // dan pages bernilai 0
@@ -1882,7 +2470,7 @@
             // dan hasil perkalian dari pages ((current_page - 1) * per_page || (halaman ke 3 - 1) * 10 per page) = 20
             // jadi 22 - 20 = 2
             // maka index tr yang akan di update ialah 2
-            var td      = tr[k - pages].getElementsByTagName("td");
+            var td      = tr[index_tr].getElementsByTagName("td");
             
             for(var j in find)
             {
@@ -1905,14 +2493,11 @@
 
                 if(this.json_search !== null)
                 {
-                    // variable index akan mengambil data array terakhir
-                    // atau mengambil data object terakhir (primary_index)
-                    index = is_array ? this.json_search[k][this.json_search[k].length - 1] : this.json_search[k]["primary_index"];
                     // mengganti data ke yang baru
-                    this.json_search[k][j] = find[j];   
+                    this.json_search[ arr_find_json_search[i] ][j] = find[j];
                 }
                 // mengganti data ke yang baru
-                this.json[index][j] = find[j];
+                this.json[ arr_find_json[i] ][j] = find[j];
                 
                 var json = this.json_search === null ? this.json : this.json_search;
                 
@@ -2044,20 +2629,26 @@
      */
     arjunane_table.prototype.getCheckedData = function ()
     {
-        var indexs        = new Array(),
-            data_checked  = new Array();
+        // var indexs        = new Array(),
+        //     data_checked  = new Array();
+        var data_checked = new Array();
         if(this.index_checked.length > 0)
         {
             for(var i = 0; i < this.index_checked.length; i++)
             {
                 if(typeof this.index_checked[i] !== 'undefined')
                 {
-                    indexs.push(this.index_checked[i]);
-                    data_checked.push(this.data_checked[i]);
+                    var data = {};
+                    data["key"] = this.index_checked[i];
+                    data['data'] = this.__setParameters(this.data_checked[i]);
+                    data_checked.push(data);
+                    // indexs.push(this.index_checked[i]);
+                    // data_checked.push(this.__setParameters(this.data_checked[i]));
                 }
             }
         }
-        return { indexs : indexs, data_checked : data_checked };
+        // return { indexs : indexs, data_checked : data_checked };
+        return data_checked;
     }
 
     /**
@@ -2067,7 +2658,18 @@
      */
     arjunane_table.prototype.getData = function ()
     {
-        return this.json;
+        var newJson = new Array(),
+            is_array = global_data[this.index]["is_array"];
+        for(var i = 0; i < this.json.length; i++)
+        {
+            var ini = this.json[i];
+            var data = {};
+            data["key"] = is_array ? ini[ini.length - 1] : ini["primary_index"];
+            data["data"] = this.__setParameters(ini);
+            newJson.push(data);
+            //newJson.push(this.__setParameters(this.json[i]))
+        }
+        return newJson;
     }
 
     /**
@@ -2082,20 +2684,33 @@
     {
         var gd      = global_data[this.index],
             data    = new Array(),
+            indexs  = new Array(),
+            is_array= gd["is_array"],
             json    = this.json_search === null ? this.json : this.json_search,
             start   = (gd['current_page'] - 1) * gd["per_page"];
-        for(var i = start; i < json.length; i++)
+
+        if(typeof json.length !== 'undefined' || json.length > 0)
         {
-            data.push(this.__setParameters(json[i]));
-            /**
-             * semisal current_page (halaman saat ini) ialah 1
-             * dan per_page (per halaman) ialah 10
-             * maka 1 * 10 = 10
-             * 
-             * jika i + 1 sama dengan 10 : berhenti
-             */
-            if((gd["current_page"] * gd["per_page"]) === (i + 1)) break;
+            for(var i = start; i < json.length; i++)
+            {
+                var ini = json[i];
+                var dt = {};
+
+                dt["key"] = is_array ? ini[ini.length - 1] : ini["primary_index"];
+                dt["data"] = this.__setParameters(ini);
+                data.push(dt);
+               // data.push(this.__setParameters(json[i]));
+                /**
+                 * semisal current_page (halaman saat ini) ialah 1
+                 * dan per_page (per halaman) ialah 10
+                 * maka 1 * 10 = 10
+                 * 
+                 * jika i + 1 sama dengan 10 : berhenti
+                 */
+                if((gd["current_page"] * gd["per_page"]) === (i + 1)) break;
+            }
         }
+
         return data;
     }
 
@@ -2106,12 +2721,24 @@
      */
     arjunane_table.prototype.getAllCurrentData = function ()
     {
-        var data    = new Array(),
-            json    = this.json_search === null ? this.json : this.json_search;
-        for(var i = 0; i < json.length; i++)
+        var data        = new Array(),
+            is_array    = global_data[this.index]["is_array"],
+            json        = this.json_search === null ? this.json : this.json_search;
+
+        if(typeof json.length !== 'undefined' || json.length > 0)
         {
-            data.push(this.__setParameters(json[i]));
+            for(var i = 0; i < json.length; i++)
+            {
+                var ini = json[i];
+                var dt = {};
+
+                dt["key"] = is_array ? ini[ini.length - 1] : ini["primary_index"];
+                dt["data"] = this.__setParameters(ini);
+                data.push(dt);
+                //data.push(this.__setParameters(json[i]));
+            }
         }
+        
         return data;
     }
 
@@ -2128,6 +2755,144 @@
             return false;
         }
         return true;
+    }
+
+    /**
+     * 
+     * @param {*} evt
+     * @param {*} func
+     * 
+     * Memberi listener setiap ada perubahan data maupun saat selesai mendapatkan data
+     */
+    arjunane_table.prototype.on = function (evt, func)
+    {
+        // saat selesai mendapatkan data dari request server maupun saat dari init table
+        if     (evt === "complete")    this.on_complete    = func;
+        // saat data mengalami perubahan (dari ganti halaman atau pencarian, dsb)
+        else if(evt === 'change')      this.on_change      = func;
+        else if(evt === 'next_page')   this.on_next_page   = func;
+        else if(evt === 'prev_page')   this.on_prev_page   = func;
+        else if(evt === 'jump_page')   this.on_jump_page   = func;
+        else if(evt === 'showing')     this.on_showing     = func;
+        else if(evt === 'filter')      this.on_filter      = func;
+        // saat data mengalami perubahan (saat ganti halaman)
+        else if(evt === 'page_change') this.on_page_change = func;
+        // untuk memberikan events di setiap row (tr) pada tbody
+        else if(evt === "row")         this.on_row         = func;
+        // untuk memberikan events di tbody
+        else if(evt === "tbody")       this.on_tbody       = func;
+    }
+
+    arjunane_table.prototype.pages = function ()
+    {
+        var gd = global_data[this.index];
+        var obj = {
+            max_page        : this.max_page,
+            per_page        : gd["per_page"],
+            current_page    : gd["current_page"]
+        };
+        return obj;
+    }
+
+    /**
+     * 
+     * @param {*} arr digunakan untuk me-replace semua data JSON sebelumnya
+     */
+    arjunane_table.prototype.replace = function (arr)
+    {
+        var self = this;
+        if(Array.isArray(arr))
+        {
+            var dt = {};
+            global_data[this.index] = 
+            {
+                index           : global_index,
+                data            : {},
+                per_page        : 10,
+                current_page    : 1,
+                arr_search      : {},
+                arr_search_type : {},
+                arr_object      : null,
+                order_by_index  : null,
+                is_asc          : true,
+            };
+
+            appendData(self, null, arr);
+
+            if(self.insert_column) self.__changeColumn();
+        }
+        else
+        {
+            var msg =   "<strong>Selector</strong> : " + self._str_selector + "<br>" +
+                        "<strong>Messages</strong> : <br>" + "Data not valid";
+
+            self.showAlert({
+                type    : "danger", 
+                title   : "Ops, something went wrong !",
+                text    : msg
+            });
+        }
+    }
+
+    /**
+     * nextPage
+     * digunakan untuk mengganti data ke halaman berikutnya.
+     */
+    arjunane_table.prototype.nextPage = function ()
+    {
+        if(global_data[this.index]["current_page"] >= this.max_page) return;
+
+        this.__getPagination(global_data[this.index]["current_page"] + 1);
+        this.__setResult();
+        this.__setPagination();
+        this.__setTbody();
+
+        this.on_next_page();
+        this.on_page_change();
+    }
+
+    /**
+     * prevPage
+     * digunakan untuk mengganti data ke halaman sebelumnya.
+     */
+    arjunane_table.prototype.prevPage = function ()
+    {
+        if(global_data[this.index]["current_page"] <= 1) return;
+        this.__getPagination(global_data[this.index]["current_page"] - 1);
+        this.__setResult();
+        this.__setPagination();
+        this.__setTbody();
+
+        this.on_next_page();
+        this.on_page_change();
+    }
+
+    /**
+     * jumpTo
+     * digunakan untuk mengganti data ke halaman tertentu.
+     */
+    arjunane_table.prototype.jumpTo = function (_page)
+    {
+        var page = isNaN(parseInt(_page)) ? 1 : parseInt(_page);
+        
+        if(page < 1 || page > this.max_page) return;
+
+        
+        this.__getPagination(page);
+                    
+        this.__setResult();
+        this.__setPagination();
+        this.__setTbody();
+
+        this.on_jump_page();
+        this.on_page_change();
+    }
+
+    function lengthOfObject(obj)
+    {
+        var length = 0;
+        for (var o in obj) length += 1;
+        return length;
     }
 
     function indexOfObject(obj, value)

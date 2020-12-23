@@ -99,9 +99,15 @@
                     <li><a class="choose-doc" href="#insert-data">Insert Data</a></li>
                     <li><a class="choose-doc" href="#update-data">Update Data</a></li>
                     <li><a class="choose-doc" href="#delete-data">Delete Data</a></li>
+                    <li><a class="choose-doc" href="#insert-column">Insert Column</a></li>
+                    <li><a class="choose-doc" href="#update-column">Update Column</a></li>
+                    <li><a class="choose-doc" href="#delete-column">Delete Column</a></li>
                     <li><a class="choose-doc" href="#show-alert">Show Alert</a></li>
                     <li><a class="choose-doc" href="#show-confirm">Show Confirm</a></li>
+                    <li><a class="choose-doc" href="#hide">Hide</a></li>
+                    <li><a class="choose-doc" href="#replace-all">Replace</a></li>
                     <li><a class="choose-doc" href="#filter">Filter</a></li>
+                    <li><a class="choose-doc" href="#on">On</a></li>
                     <li><a class="choose-doc" href="#req">Req</a></li>
                     <li><a class="choose-doc" href="#others">Others</a></li>
                 </ul>
@@ -337,6 +343,32 @@ var arTable = arTable.init("#table", {
                 </div>
                 <h3>Output : </h3>
                 <div class="set-table"></div>
+                <div class="bg-b px">
+                    <pre>
+var json_table = 
+[
+    { "id" : 1, "name" : "Name number 1", "grade" : 70, "passing" : 1, "sex" : "Female", "birth" : "2020-04-18", "place" : "Kedungwuni"},
+    { "id" : 2, "name" : "Name number 2", "grade" : 10, "passing" : 0, "sex" : "Male", "birth" : "2020-04-17", "place" : "Linggo Asri"},
+    { "id" : 3, "name" : "Name number 3", "grade" : 80, "passing" : 1, "sex" : "Female", "birth" : "2020-04-16", "place" : "Bojong"},
+    { "id" : 4, "name" : "Name number 4", "grade" : 30, "passing" : 0, "sex" : "Male", "birth" : "2020-04-15", "place" : "Bojong"},
+    { "id" : 5, "name" : "Name number 5", "grade" : 100, "passing" : 1, "sex" : "Female", "birth" : "2020-04-14", "place" : "Kedungwuni"},
+    { "id" : 6, "name" : "Name number 6", "grade" : 30, "passing" : 0, "sex" : "Male", "birth" : "2020-04-13", "place" : "Kajen"},
+    { "id" : 7, "name" : "Name number 7", "grade" : 100, "passing" : 1, "sex" : "Female", "birth" : "2020-04-12", "place" : "Kedungwuni"},
+    { "id" : 8, "name" : "Name number 8", "grade" : 80, "passing" : 1, "sex" : "Male", "birth" : "2020-04-11", "place" : "Bojong"},
+    { "id" : 9, "name" : "Name number 9", "grade" : 10, "passing" : 0, "sex" : "Female", "birth" : "2020-04-10", "place" : "Kajen"},
+    { "id" : 10, "name" : "Name number 10", "grade" : 20, "passing" : 0, "sex" : "Male", "birth" : "2020-04-09", "place" : "Bojong"},
+    { "id" : 11, "name" : "Name number 11", "grade" : 50, "passing" : 0, "sex" : "Male", "birth" : "2020-04-09", "place" : "Pekajangan"},
+    { "id" : 12, "name" : "Name number 12", "grade" : 60, "passing" : 0, "sex" : "Male", "birth" : "2020-04-09", "place" : "Wiradesa"}
+];
+
+arTable.init(".set-table-json", {
+    data: json_table,
+    title: "Data Orang",
+    thead: ["ID", "Name", "Grade", "Passing", "Sex", "Birth", "Place"]
+});</pre>
+                </div>
+                <h3>Output : </h3>
+                <div class="set-table-json"></div>
             </div>
         </div>
 
@@ -511,10 +543,13 @@ update_row :
                     </li>
                     <li>listener [<i>Optional</i> ] : your action for the listener and you can custom your link/href in it
                         <ul>
-                            <li>data : get current data</li>
+                            <li>data : get current data
+                                <ul>
+                                    <li>key : get current index of data</li>
+                                    <li>data : get current data</li>
+                                </ul>
+                            </li>
                             <li>events</li>
-                            <li>index : get current index</li>
-                            <li>request : request data to your server</li>
                             <li>object : object <strong>this</strong></li>
                         </ul>
                     </li>
@@ -540,11 +575,11 @@ arTable.init("#table-action", {
                 var url     = this.href + "?id=" + data[0];
                 return url;
             },
-            listener: function  (data, event, index, req, element)
+            listener: function  (data, event, element)
             {
                 event.preventDefault();
                 var url = element.getAttribute("href");
-                req(url, function (result) {
+                arTable.req(url, function (result) {
                     if(result.error === null && arTable.isJSON(result.result))
                     {
                         // Success
@@ -571,9 +606,6 @@ arTable.init("#table-action", {
                 </div>
                 <h3>Output:</h3>
                 <div id="table-action"></div>
-                <div class="mb-1">
-                    <strong>Example</strong> : Action at <strong>content_top</strong>.
-                </div>
             </div>
         </div>
         
@@ -597,10 +629,13 @@ arTable.init("#table-action", {
                     </li>
                     <li>listener [<i>Optional</i> ] : your action for the listener
                         <ul>
-                            <li>data : get current data</li>
+                            <li>data : get current data
+                                <ul>
+                                    <li>key : get current index of data</li>
+                                    <li>data : get current data</li>
+                                </ul>
+                            </li>
                             <li>events</li>
-                            <li>index : get current index</li>
-                            <li>request : request data to your server</li>
                             <li>object : object <strong>this</strong></li>
                         </ul>
                     </li>
@@ -626,11 +661,11 @@ arTable.init("#table-popup", {
                 var url     = this.href + "?id=" + data[0];
                 return url;
             },
-            listener: function  (data, event, index, req, element)
+            listener: function  (data, event, element)
             {
                 event.preventDefault();
                 var url = element.getAttribute("href");
-                req(url, function (result) {
+                arTable.req(url, function (result) {
                     if(result.error === null && arTable.isJSON(result.result))
                     {
                         // Success
@@ -687,10 +722,14 @@ arTable.init("#table-popup", {
                     </li>
                     <li>listener [<i>Optional</i> ] : your action for the listener and you can custom your link/href in it
                         <ul>
-                            <li>data : get current data of the selected data</li>
+                            <li>data : get current data of the selected data
+                                <ul>
+                                    <li>key : get current index of data</li>
+                                    <li>data : get current data</li>
+                                </ul>
+                            </li>
                             <li>events</li>
-                            <li>index : get current index of the selected data</li>
-                            <li>request : request data to your server</li>
+                            <li>object : object <strong>this</strong></li>
                         </ul>
                     </li>
                 </ul>
@@ -714,15 +753,16 @@ arTable.init("#table-content-action", {
                 type    : "success",
                 href    : "insert.php",
                 attr    : 'id="add-data"',
-                params  : function (data)
+                params: function(datas) 
                 {
-                    var param   = new Array();
+                    var param = new Array();
                     var url = "#";
-                    if(data.length > 0)
-                    {
-                        for(var i = 0 ; i < data.length; i++)
-                        {
-                            param.push(data[i][0]); // get 'id'
+                    if (datas.length > 0) {
+                        for (var i = 0; i < datas.length; i++) {
+                            var ini = datas[i],
+                                data = ini.data[0],
+                                key  = ini.key; // get 'id'
+                            param.push(data);
                         }
                         url = "?id=" + param.join(",");
                     }
@@ -733,25 +773,22 @@ arTable.init("#table-content-action", {
                 text    : "Edit Content Bottom",
                 type    : "info",
                 href    : "edit.php",
-                listener: function  (data, event, index, req)
-                {
+                listener: function(data, event, element) {
                     event.preventDefault();
-                    var param   = new Array();
+                    var param = new Array();
                     //custom your link/href (get current selected data)
-                    if(data.length > 0)
-                    {
-                        for(var i = 0 ; i < data.length; i++)
-                        {
-                            param.push(data[i][0]);
+                    if (datas.length > 0) {
+                        for (var i = 0; i < datas.length; i++) {
+                            var ini = datas[i],
+                                data = ini.data[0],
+                                key  = ini.key; // get 'id'
+                            param.push(data);
                         }
                         var url = this.href + "?id=" + param.join(",");
-                        req(url, function (result) {
-                            if(result.error === null && arTable.isJSON(result.result))
-                            {
+                        arTable.req(url, function(result) {
+                            if (result.error === null && arTable.isJSON(result.result)) {
                                 // Success
-                            }
-                            else
-                            {
+                            } else {
                                 // Error
                             }
                         });
@@ -769,15 +806,16 @@ arTable.init("#table-content-action", {
                 type    : "success",
                 href    : "insert.php",
                 attr    : 'id="add-data"',
-                params  : function (data)
+                params: function(datas) 
                 {
-                    var param   = new Array();
+                    var param = new Array();
                     var url = "#";
-                    if(data.length > 0)
-                    {
-                        for(var i = 0 ; i < data.length; i++)
-                        {
-                            param.push(data[i][0]); // get 'id'
+                    if (datas.length > 0) {
+                        for (var i = 0; i < datas.length; i++) {
+                            var ini = datas[i],
+                                data = ini.data[0],
+                                key  = ini.key; // get 'id'
+                            param.push(data);
                         }
                         url = "?id=" + param.join(",");
                     }
@@ -788,25 +826,22 @@ arTable.init("#table-content-action", {
                 text    : "Edit Content Top",
                 type    : "info",
                 href    : "edit.php",
-                listener: function  (data, event, index, req)
-                {
+                listener: function(data, event, element) {
                     event.preventDefault();
-                    var param   = new Array();
+                    var param = new Array();
                     //custom your link/href (get current selected data)
-                    if(data.length > 0)
-                    {
-                        for(var i = 0 ; i < data.length; i++)
-                        {
-                            param.push(data[i][0]);
+                    if (datas.length > 0) {
+                        for (var i = 0; i < datas.length; i++) {
+                            var ini = datas[i],
+                                data = ini.data[0],
+                                key  = ini.key; // get 'id'
+                            param.push(data);
                         }
                         var url = this.href + "?id=" + param.join(",");
-                        req(url, function (result) {
-                            if(result.error === null && arTable.isJSON(result.result))
-                            {
+                        arTable.req(url, function(result) {
+                            if (result.error === null && arTable.isJSON(result.result)) {
                                 // Success
-                            }
-                            else
-                            {
+                            } else {
                                 // Error
                             }
                         });
@@ -831,7 +866,14 @@ arTable.init("#table-content-action", {
                 <strong>form_filter</strong> have 5 keys :
                 <ul>
                     <li>text    : name or text of form filter</li>
-                    <li>for_key : key of Array or Array of Object [<strong>string</strong> OR <strong>integer</strong>]</li>
+                    <li>
+                        for_key : key of Array or Array of Object [<strong>string</strong> OR <strong>integer</strong>]<br>
+                        <ul>
+                            <li>Use "<strong>*</strong>" to find from all index<br>
+                                <strong>WARNING:</strong> when you use '*' (star) to find all your data, it will replacing all your searches before
+                            </li>
+                        </ul>
+                    </li>
                     <li>type    :
                         <ul>
                             <li>input</li>
@@ -840,6 +882,19 @@ arTable.init("#table-content-action", {
                     </li>
                     <li>arr : only for <strong>select</strong> type</li>
                     <li>attr [<i>Optional</i> ] : Your optional attributes</li>
+                    <li>
+                        filter_type<br>
+                        
+                        Searches type
+                        <ul>
+                            <li>io : IndexOf() [<strong>default</strong>]</li>
+                            <li>eq : Equal ( === )</li>
+                            <li>gt : Greater than ( > )</li>
+                            <li>lt : Lower than ( < )</li>
+                            <li>gte : Greater than Equal ( >= )</li>
+                            <li>lte : Lower than Equal ( <= )</li>
+                        </ul>
+                    </li>
                 </ul>
                 <div class="col-mx">
                     <strong>NOTE:</strong> It take half of second (1/2 second) to change or update the data of table (to prevent fast changing)
@@ -871,6 +926,13 @@ arTable.init("#table-filter", {
                     ["1", "Lulus"],
                     ["0", "Tidak Lulus"],
                 ]
+            },
+            { 
+                text    : "Grade",
+                type    : "input", 
+                for_key : 2, 
+                attr    : 'placeholder="Cari Nilai ..."',
+                filter_type : "gte"
             }
         ]
     },
@@ -880,18 +942,25 @@ arTable.init("#table-filter", {
             { 
                 text    : "Nama Siswa",
                 type    : "input", 
-                for     : 1, 
+                for_key     : 1, 
                 attr    : 'placeholder="Masukkan Nama ..."'
             },
             { 
                 text    : "Kelulusan",
                 type    : "select", 
-                for     : 3, 
+                for_key     : 3, 
                 arr     : [
                     ["", "All"],
                     ["1", "Lulus"],
                     ["0", "Tidak Lulus"],
                 ]
+            },
+            { 
+                text    : "Grade",
+                type    : "input", 
+                for_key : 2, 
+                attr    : 'placeholder="Cari Nilai ..."',
+                filter_type : "gte"
             }
         ]
     }
@@ -972,10 +1041,10 @@ var setArTable = arTable.init("#table-insert", {
                 text    : "Insert Once",
                 type    : "success",
                 href    : "json/insert.json",
-                listener: function (data, event, index, req)
+                listener: function (data, event, element)
                 {
                     event.preventDefault();
-                    req(this.href, function (res) {
+                    arTable.req(this.href, function (res) {
                         if(res.error === null && arTable.isJSON(res.result))
                         {
                             <i>// it will insert : [101,"Si Cantik",70,1,"Female","2020-04-18","Kedungwuni"]</i>
@@ -992,10 +1061,10 @@ var setArTable = arTable.init("#table-insert", {
                 text    : "Insert Multiple",
                 type    : "info",
                 href    : "json/insert-multiple.json",
-                listener: function  (data, event, index, req)
+                listener: function  (data, event, element)
                 {
                     event.preventDefault();
-                    req(this.href, function (res) {
+                    arTable.req(this.href, function (res) {
                         if(res.error === null && arTable.isJSON(res.result))
                         {
                             <i>
@@ -1129,8 +1198,8 @@ var update =  [
         6 : "Pekalongan" <i>// Place</i>
     }
 ];
-var index = [ 10, 15];
-updateArTable.updateData(index, update);
+var keys = [ 10, 15];
+updateArTable.updateData(keys, update);
 
 <i>// <strong>OR</strong></i>
 
@@ -1146,8 +1215,8 @@ var update =  [
         "place" : "Pekalongan" <i>// Place</i>
     }
 ];
-var index = [ 10, 15];
-updateArTable.updateData(index, update);
+var keys = [ 10, 15];
+updateArTable.updateData(keys, update);
                     </pre>
                 </div>
 
@@ -1164,7 +1233,7 @@ var updateArTable = arTable.init("#table-update", {
             text    : "Edit specific",
             cls     : "btn t1 blue",
             href    : "json/update.json",
-            listener: function  (data, event, index, req, element)
+            listener: function  (data, event, element)
             {
                 event.preventDefault();
                 var url = element.getAttribute("href");
@@ -1178,10 +1247,10 @@ var updateArTable = arTable.init("#table-update", {
                         }
                     */
                 </i>
-                req(url, function (res) {
+                arTable.req(url, function (res) {
                     if(res.error === null && arTable.isJSON(res.result))
                     {
-                        updateArTable.updateData(index, JSON.parse(res.result));
+                        updateArTable.updateData(data.key, JSON.parse(res.result));
                     }
                     else
                     {
@@ -1199,15 +1268,20 @@ var updateArTable = arTable.init("#table-update", {
                 text    : "Update 2 data of Selected",
                 type    : "success",
                 href    : "json/update-multiple.json",
-                listener: function (data, event, index, req)
+                listener: function (data, event, element)
                 {
                     event.preventDefault();
                     if(data.length > 0)
                     {
-                        req(this.href, function (res) {
+                        arTable.req(this.href, function (res) {
                             if(res.error === null && arTable.isJSON(res.result))
                             {
-                                updateArTable.updateData(index, JSON.parse(res.result));
+                                var keys = new Array();
+                                for(var i = 0; i < data.length; i++)
+                                {
+                                    keys.push(data[i].key);
+                                }
+                                updateArTable.updateData(keys, JSON.parse(res.result));
                             }
                             else
                             {
@@ -1258,8 +1332,8 @@ document.getElementById("delete").addEventListener("click", function () {
 <i><strong>OR</strong></i>
 
 document.getElementById("delete").addEventListener("click", function () { 
-    var index = [10, 15];
-    deleteArTable.deleteData(index);
+    var keys = [10, 15];
+    deleteArTable.deleteData(keys);
 });</pre>
                 </div>
 
@@ -1276,17 +1350,17 @@ var deleteArTable = arTable.init("#table-delete", {
             text    : "Delete",
             cls     : "btn t1 red",
             href    : "json/update.json",
-            listener: function  (data, event, index, req, element)
+            listener: function  (data, event, element)
             {
                 event.preventDefault();
                 var url = element.getAttribute("href");
-                req(url, function (res) {
+                arTable.req(url, function (res) {
                     if(res.error === null && arTable.isJSON(res.result))
                     {
                         var json = JSON.parse(res.result);
                         if(json.hasil)
                         {
-                            deleteArTable.deleteData(index);
+                            deleteArTable.deleteData(data.key);
                         }
                     }
                     else
@@ -1305,18 +1379,23 @@ var deleteArTable = arTable.init("#table-delete", {
                 text    : "Delete Selected",
                 type    : "success",
                 href    : "json/update-multiple.json",
-                listener: function (data, event, index, req)
+                listener: function (data, event, element)
                 {
                     event.preventDefault();
                     if(data.length > 0)
                     {
-                        req(this.href, function (res) {
+                        arTable.req(this.href, function (res) {
                             if(res.error === null && arTable.isJSON(res.result))
                             {
                                 var json = JSON.parse(res.result);
+                                var keys = new Array();
+                                for(var i = 0; i < data.length; i++)
+                                {
+                                    keys.push(data[i].key);
+                                }
                                 if(json.hasil)
                                 {
-                                    deleteArTable.deleteData(index);
+                                    deleteArTable.deleteData(keys);
                                 }
                             }
                             else
@@ -1337,6 +1416,223 @@ var deleteArTable = arTable.init("#table-delete", {
                 </div>
                 <h3>Output:</h3>
                 <div id="table-delete"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="insert-column">
+            <h1>Insert Column</h1>
+            <div class="p-x">
+                <div class="col-mx">
+                    Method of <strong>insert_column</strong> or <strong>insertColumn</strong> is for inserting data into table's internal caches of data.
+                </div>
+                <div class="col-mx">
+                    <strong>insert_column</strong> or <strong>insertColumn</strong> take 4 parameters
+                    <ul>
+                        <li>thead : string</li>
+                        <li>key : integer or string (Only for Array of Objects)</li>
+                        <li>value : function/method</li>
+                        <li>html : function/method with return to <strong>string</strong></li>
+                    </ul>
+                </div>
+                <h3>NOTE</h3>
+                <ul>
+                    <li><span>The property <strong>key</strong> is required if your data is <strong>Array of Objects</strong> and you don't need to put property key if your data is <strong>Array</strong></span></li>
+                    <li><span>When your data is <strong>Array</strong>, it will increment your index key.</span></li>
+                    <li><span>When your property <strong>key</strong> is exist on current data, it will throw <strong>error</strong></span></li>
+                    <li>The property <strong>value</strong> is for inserting to local caches of data</li>
+                    <li>The property <strong>html</strong> is output from <strong>value</strong></li>
+                    <li>When you use <strong>insertColumn</strong> method, it will remove all your recent searches data from input or others</li>
+                </ul>
+                <div class="col-mx">
+                    <strong>Example for Array Data:</strong>
+                </div>
+                <div class="bg-b m-b-1">
+                    <pre>
+var insertColumnArTable = arTable.init("#insert-column", {
+    ...
+    insert_column: [
+        {
+            thead   : "Median",
+            value   : function (data)
+            {
+                return data[2] / 2;
+            },
+            html : function (data)
+            {
+                return data[7] >= 30 ? '&lt;span style="color:green">' + data[7] + '&lt;/span>' : '&lt;span style="color:red">' + data[7] + '&lt;/span>';
+            }
+        },
+        {
+            html: function(data)
+            {
+                return data[7] >= 30 ? "More than 30" : "Less than 30";
+            }
+        }
+    ]
+});</pre>
+                </div>
+
+                <h3>Example for Array of Objects Data</h3>
+                <div class="bg-b m-b-1">
+                    <pre>
+var insertColumnArTable = arTable.init("#insert-column", {
+    ...
+    insert_column: [
+        {
+            thead   : "Median",
+            key     : "median",
+            value   : function (data)
+            {
+                return data["grade"] / 2;
+            },
+            html : function (data)
+            {
+                return data["grade"] >= 30 ? '&lt;span style="color:green">' + data[7] + '&lt;/span>' : '&lt;span style="color:red">' + data[7] + '&lt;/span>';
+            }
+        },
+        {
+            key : "type",
+            html: function(data)
+            {
+                return data["median"] >= 30 ? "More than 30" : "Less than 30";
+            }
+        }
+    ]
+});</pre>
+                </div>
+                <h3>Example for insertColumn method:</h3>
+                <div class="bg-b m-b-1">
+                    <pre>
+var insertColumnArTable = arTable.init("#insert-column", {
+    ...
+});
+
+document.getElementById("btn-insert-column").addEventListener("click", function () { 
+    insertColumnArTable.insertColumn([
+        {
+            thead   : "Median",
+            value   : function (currentRow)
+            {
+                return currentRow[2] / 2;
+            },
+            html : function (currentRow)
+            {
+                return currentRow[7] >= 30 ? '&lt;span style="color:green">' + currentRow[7] + '&lt;/span>' : '&lt;span style="color:red">' + currentRow[7] + '&lt;/span>';
+            }
+        },
+        {
+            html: function(currentRow)
+            {
+                return currentRow[7] >= 30 ? "More than 30" : "Less than 30";
+            }
+        }
+    ]);
+});</pre>
+                </div>
+                <h3>Output:</h3>
+                <button id="btn-insert-column">Insert Column</button>
+                <div id="table-insert-column"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="update-column">
+            <h1>Update Column</h1>
+            <div class="p-x">
+                <div class="col-mx">
+                    Method of <strong>updateColumn</strong> is for updating data into table's internal caches of data.
+                </div>
+                <div class="col-mx">
+                    <strong>updateColumn</strong> take 2 parameters
+                    <ul>
+                        <li>key or index</li>
+                        <li>Objects
+                            <ul>
+                                <li>value : method/function with return</li>
+                                <li>html : method/function with return of string</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <h3>NOTE</h3>
+                <ul>
+                    <li>The property <strong>value</strong> is for inserting to local caches of data</li>
+                    <li>The property <strong>html</strong> is output from <strong>value</strong></li>
+                    <li>When you use <strong>updateColumn</strong> method, it will remove all your recent searches data from input or others</li>
+                </ul>
+
+                <h3>Example for deleteColumn method:</h3>
+                <div class="bg-b m-b-1">
+                    <pre>
+var updateColumnArTable = arTable.init("#table-update-column", {
+    ...
+});
+
+document.getElementById("btn-update-column").addEventListener("click", function () { 
+    updateColumnArTable.updateColumn(2, {
+        value : function (currentRow)
+        {
+            var grade = currentRow[2] + 15;
+            if(grade > 100) return currentRow[2];
+
+            return grade;
+        }
+    });
+    updateColumnArTable.updateColumn(3, {
+        value : function (currentRow)
+        {
+            return currentRow[2] >= 70 ? 1 : 0;
+        },
+        html : function (currentRow)
+        {
+            return currentRow[3] === 1 ? "Lulus" : "Tidak Lulus";
+        }
+    });
+});</pre>
+                </div>
+                <h3>Output:</h3>
+                <button id="btn-update-column">Update Columns 2 and 3</button>
+                <div id="table-update-column"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="delete-column">
+            <h1>Delete Column</h1>
+            <div class="p-x">
+                <div class="col-mx">
+                    Method of <strong>deleteColumn</strong> is for deleting data from table's internal caches of data.
+                </div>
+                <div class="col-mx">
+                    <strong>insert_column</strong> or <strong>insertColumn</strong> take 1 parameter
+                    <ul>
+                        <li>Array of <strong>string</strong> or <strong>integer</strong></li>
+                    </ul>
+                </div>
+                <h3>NOTE</h3>
+                <div class="col-mx">
+                    <span>The method <strong>deleteColumn</strong> cannot delete hidden data/value</span><br>
+                    <span>When you use <strong>deleteColumn</strong> method, it will remove all your recent searches data from input or others</span>
+                </div>
+
+                <h3>Example for deleteColumn method:</h3>
+                <div class="bg-b m-b-1">
+                    <pre>
+var deleteColumnArTable = arTable.init("#insert-column", {
+    ...
+});
+
+// <i>Example below for Array Data</i>
+document.getElementById("btn-delete-column").addEventListener("click", function () { 
+    deleteColumnArTable.deleteColumn([0, 1]);
+});
+
+// <i>Example below for Array of Objects Data</i>
+document.getElementById("btn-delete-column").addEventListener("click", function () { 
+    deleteColumnArTable.deleteColumn(["id", "sex"]);
+});</pre>
+                </div>
+                <h3>Output:</h3>
+                <button id="btn-delete-column">Delete Columns index 0 and 1</button>
+                <div id="table-delete-column"></div>
             </div>
         </div>
 
@@ -1394,17 +1690,17 @@ var alertArTable = arTable.init("#table-alert", {
             text    : "Delete",
             cls     : "btn t1 red",
             href    : "json/delete.json",
-            listener: function(data, event, index, req, element) 
+            listener: function(data, event, element) 
             {
                 event.preventDefault();
                 var url = element.getAttribute("href");
-                req(url, function(res) {
+                arTable.req(url, function(res) {
                     if (res.error === null && arTable.isJSON(res.result)) 
                     {
                         var json = JSON.parse(res.result);
                         if (json.hasil) {
                             var name = data[1];
-                            alertArTable.deleteData(index);
+                            alertArTable.deleteData(data.key);
                             alertArTable.showAlert({
                                 type: "success",
                                 title: "BERHASIL",
@@ -1427,16 +1723,19 @@ var alertArTable = arTable.init("#table-alert", {
                 text    : "Delete Selected",
                 type    : "success",
                 href    : "json/delete.json",
-                listener: function(data, event, index, req) {
+                listener: function(data, event, element) {
                     event.preventDefault();
                     if (data.length > 0) 
                     {
-                        req(this.href, function(res) {
+                        arTable.req(this.href, function(res) {
                             if (res.error === null && arTable.isJSON(res.result)) 
                             {
                                 var json = JSON.parse(res.result);
                                 if (json.hasil) {
-                                    alertArTable.deleteData(index);
+                                    for(var i = 0; i < data.length; i++)
+                                    {
+                                        alertArTable.deleteData(data[i].key)
+                                    }
                                     alertArTable.showAlert({
                                         type: "success",
                                         title: "BERHASIL",
@@ -1535,10 +1834,10 @@ var confirmArTable = arTable.init("#table-confirm", {
             text    : "Delete",
             cls     : "btn t1 red",
             href    : "json/delete.json",
-            listener: function(data, event, index, req, element) 
+            listener: function(data, event, element) 
             {
                 event.preventDefault();
-                var name = data[1];
+                var name = data.data[1];
                 confirmArTable.showConfirm({
                     type        : "danger",
                     title       : "WARNING",
@@ -1548,7 +1847,7 @@ var confirmArTable = arTable.init("#table-confirm", {
                 }, function () {
 
                     var url = element.getAttribute("href");
-                    req(url, function(res) {
+                    arTable.req(url, function(res) {
                         if (res.error === null && arTable.isJSON(res.result)) 
                         {
                             var json = JSON.parse(res.result);
@@ -1579,8 +1878,9 @@ var confirmArTable = arTable.init("#table-confirm", {
                 text    : "Delete Selected",
                 type    : "success",
                 href    : "json/delete.json",
-                listener: function(data, event, index, req) {
+                listener: function(data, event, element) {
                     event.preventDefault();
+                    var url = element.getAttribute("href");
                     if (data.length > 0) 
                     {
                         confirmArTable.showConfirm({
@@ -1590,12 +1890,15 @@ var confirmArTable = arTable.init("#table-confirm", {
                             accept_text : "Ok",
                             abort_text  : "No"
                         }, function () {
-                            req(this.href, function(res) {
+                            arTable.req(url, function(res) {
                                 if (res.error === null && arTable.isJSON(res.result)) 
                                 {
                                     var json = JSON.parse(res.result);
                                     if (json.hasil) {
-                                        confirmArTable.deleteData(index);
+                                        for(var i = 0; i < data.length; i++)
+                                        {
+                                            confirmArTable.deleteData(data[i].key)
+                                        }
                                         confirmArTable.showAlert({
                                             type: "success",
                                             title: "BERHASIL",
@@ -1627,6 +1930,115 @@ var confirmArTable = arTable.init("#table-confirm", {
 
                 <h3>Output:</h3>
                 <div id="table-confirm"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="hide">
+            <h1>Hide</h1>
+            <div class="p-x">
+                <div class="col-mx">
+                    <span>The <strong>hide</strong> method is used to hide your column data</span>. <span>It'll hide your data not, delete your caches of data</span><br><br>
+                    <strong>NOTE</strong> Do not display confidential data, because even though the data has been hidden, it will still be readable (what a browser can see then the user can see)
+                </div>
+                <div class="col-mx">
+                    <span>The <strong>hide</strong> method take one parameter:</span><br>
+                    <ul>
+                        <li>Array : integer or string</li>
+                    </ul>
+                </div>
+
+                <h3>Example :</h3>
+                <div class="bg-b col-mx">
+                    <pre>
+var json_table_hide = 
+[
+    { "id" : 1, "name" : "Name number 1", "grade" : 70, "passing" : 1, "sex" : "Female", "birth" : "2020-04-18", "place" : "Kedungwuni"},
+    { "id" : 2, "name" : "Name number 2", "grade" : 10, "passing" : 0, "sex" : "Male", "birth" : "2020-04-17", "place" : "Linggo Asri"},
+    { "id" : 3, "name" : "Name number 3", "grade" : 80, "passing" : 1, "sex" : "Female", "birth" : "2020-04-16", "place" : "Bojong"},
+    { "id" : 4, "name" : "Name number 4", "grade" : 30, "passing" : 0, "sex" : "Male", "birth" : "2020-04-15", "place" : "Bojong"},
+    { "id" : 5, "name" : "Name number 5", "grade" : 100, "passing" : 1, "sex" : "Female", "birth" : "2020-04-14", "place" : "Kedungwuni"},
+    { "id" : 6, "name" : "Name number 6", "grade" : 30, "passing" : 0, "sex" : "Male", "birth" : "2020-04-13", "place" : "Kajen"},
+    { "id" : 7, "name" : "Name number 7", "grade" : 100, "passing" : 1, "sex" : "Female", "birth" : "2020-04-12", "place" : "Kedungwuni"},
+    { "id" : 8, "name" : "Name number 8", "grade" : 80, "passing" : 1, "sex" : "Male", "birth" : "2020-04-11", "place" : "Bojong"},
+    { "id" : 9, "name" : "Name number 9", "grade" : 10, "passing" : 0, "sex" : "Female", "birth" : "2020-04-10", "place" : "Kajen"},
+    { "id" : 10, "name" : "Name number 10", "grade" : 20, "passing" : 0, "sex" : "Male", "birth" : "2020-04-09", "place" : "Bojong"},
+    { "id" : 11, "name" : "Name number 11", "grade" : 50, "passing" : 0, "sex" : "Male", "birth" : "2020-04-09", "place" : "Pekajangan"},
+    { "id" : 12, "name" : "Name number 12", "grade" : 60, "passing" : 0, "sex" : "Male", "birth" : "2020-04-09", "place" : "Wiradesa"}
+];
+
+arTable.init("#table-hide", {
+    data: json_table_hide,
+    title: "Data Orang",
+    thead: ["Name", "Grade", "Passing", "Sex", "Place"],
+    hide : ["id", "birth"]
+});
+
+// <i>For array data</i>
+arTable.init("#table-hide", {
+    data: json_table_hide,
+    title: "Data Orang",
+    thead: ["Name", "Grade", "Passing", "Sex", "Place"],
+    hide : [0, 4]
+});</pre>
+                </div>
+                <h3>Output:</h3>
+                <div id="table-hide"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="replace-all">
+            <h1>Replace</h1>
+            <div class="p-x">
+                <div class="col-mx">
+                    <span>The <strong>replace</strong> method is used to replace all your caches of data</span>.<br><br>
+                    <strong>NOTE</strong>: Number of page, search, order by, etc will reset to zero or null
+                </div>
+                <div class="col-mx">
+                    <span>The <strong>replace</strong> method take one parameter:</span><br>
+                    <ul>
+                        <li>Array</li>
+                    </ul>
+                </div>
+
+                <h3>Example :</h3>
+                <div class="bg-b col-mx">
+                    <pre>
+var json_table_replace = 
+[
+    { "id" : 1, "name" : "Name number 1", "grade" : 70, "passing" : 1, "sex" : "Female", "birth" : "2020-04-18", "place" : "Kedungwuni"},
+    { "id" : 2, "name" : "Name number 2", "grade" : 10, "passing" : 0, "sex" : "Male", "birth" : "2020-04-17", "place" : "Linggo Asri"},
+    { "id" : 3, "name" : "Name number 3", "grade" : 80, "passing" : 1, "sex" : "Female", "birth" : "2020-04-16", "place" : "Bojong"},
+    { "id" : 4, "name" : "Name number 4", "grade" : 30, "passing" : 0, "sex" : "Male", "birth" : "2020-04-15", "place" : "Bojong"},
+    { "id" : 5, "name" : "Name number 5", "grade" : 100, "passing" : 1, "sex" : "Female", "birth" : "2020-04-14", "place" : "Kedungwuni"},
+    { "id" : 6, "name" : "Name number 6", "grade" : 30, "passing" : 0, "sex" : "Male", "birth" : "2020-04-13", "place" : "Kajen"},
+    { "id" : 7, "name" : "Name number 7", "grade" : 100, "passing" : 1, "sex" : "Female", "birth" : "2020-04-12", "place" : "Kedungwuni"},
+    { "id" : 8, "name" : "Name number 8", "grade" : 80, "passing" : 1, "sex" : "Male", "birth" : "2020-04-11", "place" : "Bojong"},
+    { "id" : 9, "name" : "Name number 9", "grade" : 10, "passing" : 0, "sex" : "Female", "birth" : "2020-04-10", "place" : "Kajen"},
+    { "id" : 10, "name" : "Name number 10", "grade" : 20, "passing" : 0, "sex" : "Male", "birth" : "2020-04-09", "place" : "Bojong"},
+    { "id" : 11, "name" : "Name number 11", "grade" : 50, "passing" : 0, "sex" : "Male", "birth" : "2020-04-09", "place" : "Pekajangan"},
+    { "id" : 12, "name" : "Name number 12", "grade" : 60, "passing" : 0, "sex" : "Male", "birth" : "2020-04-09", "place" : "Wiradesa"}
+];
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+var replaceArTable = arTable.init("#table-replace", {
+    data: json_table_replace,
+    title: "Data Orang",
+    thead: ["id", "Name", "Grade", "Passing", "Sex", "Birth", "Place"],
+});
+
+setInterval( function () {
+    shuffleArray(json_table_replace);
+    replaceArTable.replace(json_table_replace); // <i>It will replaced every 10 seconds</i>
+}, 10000);</pre>
+                </div>
+                <h3>Output:</h3>
+                <div id="table-replace"></div>
             </div>
         </div>
 
@@ -1670,6 +2082,7 @@ var filterArTable = arTable.init("#table-filter", {
     ...
 });
 
+// <i>for array</i>
 document.getElementById("input-name").addEventListener("input", function () {
     var value        = this.value;
     var findForIndex = 1;
@@ -1680,6 +2093,19 @@ document.getElementById("input-grade").addEventListener("input", function () {
     var value        = this.value;
     var findForIndex = 2;
     filterArTable.filter(value, findForIndex, "gte");
+});
+
+// <i>for array of object</i>
+document.getElementById("input-name").addEventListener("input", function () {
+    var value        = this.value;
+    var findForKey = "name";
+    filterArTable.filter(value, findForKey);
+});
+
+document.getElementById("input-grade").addEventListener("input", function () {
+    var value        = this.value;
+    var findForKey = "grade";
+    filterArTable.filter(value, findForKey, "gte");
 });</pre>
                 </div>
                 <h3>Output:</h3>
@@ -1698,6 +2124,108 @@ document.getElementById("input-grade").addEventListener("input", function () {
                     </div>
                 </div>
                 <div id="table--filter"></div>
+            </div>
+        </div>
+
+        <div class="show-doc" id="on">
+            <h1>On</h1>
+            <div class="p-x">
+                <div class="col-mx">
+                    The <strong>on</strong> method is to detect every update of table
+                </div>
+                <div class="col-mx">
+                    <span>It takes 2 parameters :</span>
+                    <ul>
+                        <li>event : string</li>
+                        <li>callback : method</li>
+                    </ul>
+                </div>
+                <div class="col-mx">
+                    <strong>Event list</strong>
+                    <ul>
+                        <Li>complete : when getting the data is finished (without error), <strong>complete</strong> event will fired</Li>
+                        <Li>change : when Next Page, Previous Page, Showing, Filter, Jump Page, Create, Update and Delete methods are fired, this event will fired</Li>
+                        <Li>page_change : when Next Page, Previous Page and Jump Page methods are fired, this event will fired</Li>
+                        <Li>next_page : when Next Page method is fired, this event will fired</Li>
+                        <Li>prev_page : when Previous Page method is fired, this event will fired</Li>
+                        <Li>showing : when Showing (per page) method is fired, this event will fired</Li>
+                        <Li>filter : when filter method is fired, this event will fired</Li>
+                        <Li>jump_page : when Jump Page method is fired, this event will fired</Li>
+                        <Li>row
+                            <ul>
+                                <li>parent : Element of <strong>tr</strong></li>
+                                <li>data : Data of current row
+                                    <ul>
+                                        <li>key : get current index of data</li>
+                                        <li>data : get current data</li>
+                                    </ul>
+                                </li>
+                                <li>index_current_row : Index of current row (<strong>tr</strong>)</li>
+                            </ul>
+                        </Li>
+                        <Li>tbody
+                            <ul>
+                                <li>parent : Element of <strong>tbody</strong></li>
+                            </ul>
+                        </Li>
+                    </ul>
+                </div>
+
+                <h3>Exmaple:</h3>
+                <div class="bg-b col-mx">
+                    <pre>
+var onArTable = arTable.init("#table-on", {
+    url : "sample-json/json.json",
+    title: "Data Orang",
+    thead: ["ID", "name", "Grade", "Passing", "Sex", "Birth", "Place"],
+    insert_column: [
+        {
+            html : function (data)
+            {
+                return '&lt;span> Grade : &lt;/span> &lt;input class="grade-input" value="' + data[2] + '">';
+            }
+        },
+        {
+            html: function(data)
+            {
+                return "&lt;button>BUTTON&lt;/button>";
+            }
+        },
+
+    ]
+});
+
+onArTable.on("complete", function () {
+    // <i>Your action</i>
+    console.log("complete");
+});
+onArTable.on("change", function () {
+    // <i>Your action</i>
+    console.log("change");
+});
+onArTable.on("row", function (parent, data, index_current_row) {
+    var button = parent.querySelector("button");
+    var input = parent.querySelector(".grade-input");
+    if(button !== null)
+    {
+        button.addEventListener("click", function () {
+            var msg = "value : " + input.value + "&lt;br>";
+                msg += "key : " + data.key + "&lt;br>";
+                msg += "data : " + data.data + "&lt;br>";
+                msg += "index current row : " + index_current_row;
+            onArTable.showAlert({
+                title : "INFO",
+                text : msg,
+                button_text: "OK"
+            });
+        });
+    }
+});
+onArTable.on("tbody", function (parent) {
+    // <i>Your action</i>
+});</pre>
+                </div>
+                <div id="table-on"></div>
             </div>
         </div>
 
@@ -1775,6 +2303,35 @@ arTable.req("your-url", function (res) {
                             The <strong>clearChecked()</strong> method used to clear all checked input
                         </div>
                     </li>
+                    <li>nextPage()
+                        <div class="col-mx">
+                            The <strong>nextPage()</strong> method used to change to the next page of data
+                        </div>
+                    </li>
+                    <li>prevPage()
+                        <div class="col-mx">
+                            The <strong>prevPage()</strong> method used to change to the previous page of data
+                        </div>
+                    </li>
+                    <li>pages()
+                        <div class="col-mx">
+                            The <strong>prevPage()</strong> method used to get:
+                            <ul>
+                                <li>max_page : integer</li>
+                                <li>per_page : integer</li>
+                                <li>current_page : integer</li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>jumpTo()
+                        <div class="col-mx">
+                            The <strong>jumpTo()</strong> method used to change or jump to spesific a pages<br>
+                            It take one parameter:
+                            <ul>
+                                <li>number of page : integer</li>
+                            </ul>
+                        </div>
+                    </li>
                 </ul>
                 <h3>Example</h3>
                 <div class="bg-b col-mx">
@@ -1795,6 +2352,19 @@ document.getElementById("get-current").addEventListener("click", function () {
 })
 document.getElementById("get-all-current").addEventListener("click", function () {
     show_data.innerHTML = JSON.stringify(othersArTable.getAllCurrentData(), null, 4);
+})
+document.getElementById("get-pages").addEventListener("click", function () {
+    show_data.innerHTML = JSON.stringify(othersArTable.pages(), null, 4);
+})
+document.getElementById("next-page").addEventListener("click", function () {
+    othersArTable.nextPage();
+})
+document.getElementById("prev-page").addEventListener("click", function () {
+    othersArTable.prevPage();
+})
+document.getElementById("jump-page").addEventListener("click", function () {
+    var jump = document.getElementById("jump-input").value;
+    othersArTable.jumpTo(jump);
 })</pre>
                 </div>
 
@@ -1803,11 +2373,30 @@ document.getElementById("get-all-current").addEventListener("click", function ()
                 <div class="hg-50 ov-a col-mx">
                     <pre id="show-data"></pre>
                 </div>
-                <button id="clear-checked">Clear Checked</button>
-                <button id="get-data">Get Data</button>
-                <button id="get-checked">Get Checked Data</button>
-                <button id="get-current">Get Current Data</button>
-                <button id="get-all-current">Get All Current Data</button>
+
+                <div class="col-mx">
+                    <button id="clear-checked">Clear Checked</button>
+                    <button id="get-data">Get Data</button>
+                    <button id="get-checked">Get Checked Data</button>
+                    <button id="get-current">Get Current Data</button>
+                    <button id="get-all-current">Get All Current Data</button>
+                </div>
+                <div class="col-mx">
+                    <button id="prev-page">Previous Page</button>
+                    <button id="next-page">Next Page</button>
+                </div>
+                <div class="col-mx">
+                    <button id="get-pages">Pages</button>
+                </div>
+                <div class="col-mx">
+                    <input type="number" id="jump-input" class="p-v" placeholder="Number of pages ...">
+                    <button id="jump-page">Jump</button>
+                </div>
+                <div class="col-mx">
+                    <span>Grade</span>
+                    <input type="number" class="p-v" placeholder="Find Grade ..." id="grades-input">
+                </div>
+
                 <div id="table-others"></div>
             </div>
         </div>
