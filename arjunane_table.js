@@ -575,7 +575,7 @@
                     if(self.isCheckable) minus += 1;
                     if(self.isNumeric) minus += 1;
 
-                    var key = self.isCheckable ? evt - minus : evt;
+                    var key = evt - minus;
                     
                     self.__orderBy(key);
                     
