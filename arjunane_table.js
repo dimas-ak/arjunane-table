@@ -1922,7 +1922,7 @@
                 // dimana per_page ialah 10 data
                 if(typeof data === 'undefined') break;
 
-                var key = is_array ? data[data.length - 1] : ini["primary_index"];
+                var key = is_array ? data[data.length - 1] : data["primary_index"];
                 // jika ada
                 if(remove_json.indexOf(key) !== -1) find_index.push(i);
                 
@@ -1946,7 +1946,7 @@
         var find_index_json = new Array();
         json.find( function (data, i) {
 
-            var key = is_array ? data[data.length - 1] : ini["primary_index"];
+            var key = is_array ? data[data.length - 1] : data["primary_index"];
             // jika ada
             if(remove_json.indexOf(key) !== -1) find_index_json.push(i);
             
@@ -2400,7 +2400,7 @@
             for(var i = pages; i < gd["current_page"] * gd["per_page"]; i++)
             {
                 var data = json_search[i];
-                var _key = is_array ? data[data.length - 1] : ini["primary_index"];
+                var _key = is_array ? data[data.length - 1] : data["primary_index"];
                 // jika ada
                 if(update_json.indexOf(_key) !== -1) arr_find_json_search.push(i);
                 
