@@ -2410,7 +2410,7 @@
         }
         
         this.json.find( function (data, i) {
-            var _key = is_array ? data[data.length - 1] : ini["primary_index"];
+            var _key = is_array ? data[data.length - 1] : data["primary_index"];
             if(update_json.indexOf(_key) !== -1) arr_find_json.push(i);
             
             if(arr_find_json.length === update_json.length) return true;
