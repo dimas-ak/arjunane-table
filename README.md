@@ -12,9 +12,9 @@ $ git clone https://github.com/dimas-ak/arjunane-table.git
 arjunane_table.js OR arjunane_table.min.js
 ```
 
-Documentation : [Click Here](https://dimas-ak.web.app/documentation/arjunane-table)
+Documentation : [Click Here](https://dimas-ak.github.io/#/documentation/arjunane-table-v2)
 
-[Find More](https://dimas-ak.web.app)
+[Find More](https://dimas-ak.github.io)
 
 ## Contact
 
